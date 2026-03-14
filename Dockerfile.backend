@@ -2,18 +2,18 @@
 # Multi-stage build for optimized production image
 
 # Stage 1: Dependencies
-FROM oven/bun:1.2-slim AS deps
+FROM oven/bun:1.3-slim AS deps
 WORKDIR /app
 
 # Copy package files
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 COPY packages/backend/package.json ./packages/backend/
 
 # Install dependencies
 RUN bun install --frozen-lockfile
 
 # Stage 2: Builder
-FROM oven/bun:1.2-slim AS builder
+FROM oven/bun:1.3-slim AS builder
 WORKDIR /app
 
 # Copy dependencies from deps stage
@@ -22,13 +22,13 @@ COPY --from=deps /app/packages/backend/node_modules ./packages/backend/node_modu
 
 # Copy source code
 COPY packages/backend ./packages/backend
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 
 # Build the application (transpile TypeScript)
 RUN cd packages/backend && bun build src/index.ts --outdir dist --target bun
 
 # Stage 3: Production
-FROM oven/bun:1.2-slim AS production
+FROM oven/bun:1.3-slim AS production
 WORKDIR /app
 
 # Set environment
