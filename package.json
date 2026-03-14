@@ -1,0 +1,9 @@
+{
+  "name": "karen2",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "dev:backend": "bun run --filter backend dev",
+    "dev:frontend": "bun run --filter frontend dev"
+  }
+}
