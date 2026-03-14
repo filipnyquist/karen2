@@ -46,12 +46,12 @@ export const authMiddleware = new Elysia({ name: "auth" })
       exp: "7d",
     })
   )
-  .derive({ as: "scoped" }, async ({ jwt, cookie, set }): Promise<AuthContext> => {
+  .derive({ as: "scoped" }, async ({ jwt, cookie, set, headers }): Promise<AuthContext> => {
     // Try to get token from cookie first, then Authorization header
     let token: string | undefined = cookie?.auth?.value;
 
     if (!token) {
-      const authHeader = set.headers["authorization"];
+      const authHeader = headers["authorization"];
       if (authHeader?.startsWith("Bearer ")) {
         token = authHeader.slice(7);
       }
