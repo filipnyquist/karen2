@@ -1,7 +1,10 @@
 import { Elysia, t } from "elysia";
 import { eq, and, gte, lte, desc, asc, sql } from "drizzle-orm";
-import { db, events, locations, eventWorkers, users, eventStatusEnum, eventTypeEnum, frontPageNotices } from "../db";
+import { db, events, locations, eventWorkers, users, eventStatusEnum, eventTypeEnum, frontPageNotices, redis, generateCacheKey, invalidateCachePattern } from "../db";
 import { authMiddleware, requireAdmin, requireAuth } from "../middleware/auth";
+
+const EVENTS_CACHE_TTL = 60; // 1 minute
+const EVENT_SINGLE_CACHE_TTL = 120; // 2 minutes
 
 // Helper function to format event time for display
 function formatEventTime(startTime: Date, endTime: Date): string {
@@ -28,14 +31,29 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
   .use(authMiddleware)
   // Get active frontpage notice (public)
   .get("/frontpage-notice", async () => {
+    const cacheKey = "frontpage:notice";
+
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch {
+        // Invalid cache
+      }
+    }
+
     const notice = await db.query.frontPageNotices.findFirst({
       where: eq(frontPageNotices.isActive, true),
       orderBy: [desc(frontPageNotices.updatedAt)],
     });
 
-    return {
+    const result = {
       notice: notice || null,
     };
+
+    await redis.set(cacheKey, JSON.stringify(result), 60); // 1 minute
+
+    return result;
   })
   // List events with filters
   .get("/", async ({ query }) => {
@@ -52,6 +70,29 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(50, Math.max(1, parseInt(limit)));
     const offset = (pageNum - 1) * limitNum;
+
+    // Generate cache key based on query parameters
+    const cacheKey = generateCacheKey(
+      "events",
+      "list",
+      pageNum,
+      limitNum,
+      status || "all",
+      from || "any",
+      to || "any",
+      locationId || "all",
+      search || "any"
+    );
+
+    // Try to get from cache
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch {
+        // Invalid cache
+      }
+    }
 
     // Build where conditions
     const conditions: (SQL<unknown> | undefined)[] = [];
@@ -129,7 +170,7 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
       givesPoints: e.givesPoints,
     }));
 
-    return {
+    const result = {
       events: formattedEvents,
       pagination: {
         page: pageNum,
@@ -138,6 +179,11 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
         totalPages: Math.ceil(total / limitNum),
       },
     };
+
+    // Cache the result
+    await redis.set(cacheKey, JSON.stringify(result), EVENTS_CACHE_TTL);
+
+    return result;
   }, {
     query: t.Object({
       page: t.Optional(t.String()),
@@ -151,6 +197,17 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
   })
   // Get single event
   .get("/:id", async ({ params, set }) => {
+    const cacheKey = generateCacheKey("events", params.id);
+
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch {
+        // Invalid cache
+      }
+    }
+
     const event = await db.query.events.findFirst({
       where: eq(events.id, params.id),
       with: {
@@ -180,7 +237,7 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
       return { error: "Event not found" };
     }
 
-    return {
+    const result = {
       event: {
         id: event.id,
         title: event.title,
@@ -219,6 +276,10 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
         },
       },
     };
+
+    await redis.set(cacheKey, JSON.stringify(result), EVENT_SINGLE_CACHE_TTL);
+
+    return result;
   }, {
     params: t.Object({
       id: t.String(),
@@ -266,6 +327,9 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
         createdBy: user!.id,
       })
       .returning();
+
+    // Invalidate events list cache
+    await invalidateCachePattern("events:list:*");
 
     set.status = 201;
     return {
@@ -340,6 +404,10 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
       .where(eq(events.id, params.id))
       .returning();
 
+    // Invalidate caches
+    await redis.del(generateCacheKey("events", params.id));
+    await invalidateCachePattern("events:list:*");
+
     return {
       message: "Event updated successfully",
       event: updated,
@@ -379,6 +447,10 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     }
 
     await db.delete(events).where(eq(events.id, params.id));
+
+    // Invalidate caches
+    await redis.del(generateCacheKey("events", params.id));
+    await invalidateCachePattern("events:list:*");
 
     return { message: "Event deleted successfully" };
   }, {
