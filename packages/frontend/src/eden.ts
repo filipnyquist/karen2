@@ -1,4 +1,16 @@
 import { treaty } from "@elysiajs/eden";
-import type { App } from "../../backend/src/index";
 
-export const eden = treaty<App>("http://localhost:3000");
+// Define a generic API client type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type EdenClient = any;
+
+// Use explicit type annotation to prevent inference issues
+export const eden: EdenClient = treaty("http://localhost:3000", {
+  fetch: {
+    credentials: "include",
+  },
+  headers() {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  },
+});

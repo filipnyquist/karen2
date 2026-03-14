@@ -1,30 +1,63 @@
-import { useEffect, useState } from "react";
-import { eden } from "./eden";
+import { Routes, Route } from "react-router-dom";
+import { Layout } from "./components/Layout";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Home } from "./pages/Home";
+import { Login } from "./pages/Login";
+import { Register } from "./pages/Register";
+import { VerifyEmail } from "./pages/VerifyEmail";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import { Dashboard } from "./pages/Dashboard";
+import { Profile } from "./pages/Profile";
+import { Events } from "./pages/Events";
+import { Locations } from "./pages/Locations";
+import { Scoreboard } from "./pages/Scoreboard";
 
 function App() {
-  const [message, setMessage] = useState<string>("Loading...");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data, error } = await eden.test.get();
-      if (error) {
-        setMessage(`Error: ${error.message}`);
-      } else {
-        setMessage(data);
-      }
-    };
-    fetchData();
-  }, []);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-200">
-      <div className="card bg-base-100 shadow-xl p-8">
-        <h1 className="text-3xl font-bold mb-4">Karen2</h1>
-        <p className="text-lg">
-          Backend says: <span className="font-mono text-primary">{message}</span>
-        </p>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        {/* Public routes */}
+        <Route index element={<Home />} />
+        <Route path="/events" element={<Events />} />
+        <Route path="/locations" element={<Locations />} />
+        <Route path="/scoreboard" element={<Scoreboard />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
+        {/* Protected routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin routes */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <div className="container mx-auto px-4 py-8">
+                <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+                <p>Admin functionality coming soon...</p>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+      </Route>
+    </Routes>
   );
 }
 
