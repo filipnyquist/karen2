@@ -1,10 +1,23 @@
 import { RedisClient } from "bun";
 
-const redisClient = new RedisClient({
-  hostname: process.env.REDIS_HOST || "localhost",
-  port: parseInt(process.env.REDIS_PORT || "6379"),
-  password: process.env.REDIS_PASSWORD,
-});
+// Helper to get env var with fallback (handles empty strings from Docker)
+function env(key: string, fallback: string): string {
+  const value = process.env[key];
+  return value && value.trim() !== "" ? value : fallback;
+}
+
+const redisHost = env("REDIS_HOST", "localhost");
+const redisPort = parseInt(env("REDIS_PORT", "6379"), 10);
+const redisPassword = process.env.REDIS_PASSWORD?.trim();
+
+// Build Redis URL
+const redisUrl = redisPassword
+  ? `redis://:${encodeURIComponent(redisPassword)}@${redisHost}:${redisPort}`
+  : `redis://${redisHost}:${redisPort}`;
+
+console.log("Redis URL:", redisUrl.replace(/:\/\/[^@]+@/, "://***@"));
+
+const redisClient = new RedisClient(redisUrl);
 
 export const redis = {
   async get(key: string): Promise<string | null> {

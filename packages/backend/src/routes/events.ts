@@ -196,8 +196,8 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     }),
   })
   // Get single event
-  .get("/:id", async ({ params, set }) => {
-    const cacheKey = generateCacheKey("events", params.id);
+  .get("/:eventId", async ({ params, set }) => {
+    const cacheKey = generateCacheKey("events", params.eventId);
 
     const cached = await redis.get(cacheKey);
     if (cached) {
@@ -209,7 +209,7 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     }
 
     const event = await db.query.events.findFirst({
-      where: eq(events.id, params.id),
+      where: eq(events.id, params.eventId),
       with: {
         location: true,
         workers: {
@@ -357,9 +357,9 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     beforeHandle: [requireAdmin],
   })
   // Update event (admin only)
-  .put("/:id", async ({ params, body, set }) => {
+  .put("/:eventId", async ({ params, body, set }) => {
     const existing = await db.query.events.findFirst({
-      where: eq(events.id, params.id),
+      where: eq(events.id, params.eventId),
     });
 
     if (!existing) {
@@ -379,7 +379,7 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
           sql`${events.startTime} < ${endTime}`,
           sql`${events.endTime} > ${startTime}`,
           eq(events.status, "open"),
-          sql`${events.id} != ${params.id}`
+          sql`${events.id} != ${params.eventId}`
         ),
       });
 
@@ -401,11 +401,11 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
         ...body,
         updatedAt: new Date(),
       })
-      .where(eq(events.id, params.id))
+      .where(eq(events.id, params.eventId))
       .returning();
 
     // Invalidate caches
-    await redis.del(generateCacheKey("events", params.id));
+    await redis.del(generateCacheKey("events", params.eventId));
     await invalidateCachePattern("events:list:*");
 
     return {
@@ -436,9 +436,9 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     beforeHandle: [requireAdmin],
   })
   // Delete event (admin only)
-  .delete("/:id", async ({ params, set }) => {
+  .delete("/:eventId", async ({ params, set }) => {
     const existing = await db.query.events.findFirst({
-      where: eq(events.id, params.id),
+      where: eq(events.id, params.eventId),
     });
 
     if (!existing) {
@@ -446,10 +446,10 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
       return { error: "Event not found" };
     }
 
-    await db.delete(events).where(eq(events.id, params.id));
+    await db.delete(events).where(eq(events.id, params.eventId));
 
     // Invalidate caches
-    await redis.del(generateCacheKey("events", params.id));
+    await redis.del(generateCacheKey("events", params.eventId));
     await invalidateCachePattern("events:list:*");
 
     return { message: "Event deleted successfully" };

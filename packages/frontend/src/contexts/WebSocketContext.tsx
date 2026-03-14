@@ -21,7 +21,8 @@ interface WebSocketContextType {
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
 
-const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:3000/ws";
+// Use environment variable for WS URL, fallback to relative path for Docker/proxy setups
+const WS_URL = import.meta.env.VITE_WS_URL?.trim() || "/ws";
 const RECONNECT_DELAY = 3000; // 3 seconds
 const MAX_RECONNECT_ATTEMPTS = 5;
 
