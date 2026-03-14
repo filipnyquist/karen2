@@ -14,6 +14,7 @@ import { ticketRoutes } from "./routes/tickets";
 import { scoreboardRoutes } from "./routes/scoreboard";
 import { dashboardRoutes } from "./routes/dashboard";
 import { authMiddleware } from "./middleware/auth";
+import { createWebSocketHandler } from "./ws";
 
 const app: Elysia = new Elysia()
   .use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173", credentials: true }))
@@ -32,6 +33,7 @@ const app: Elysia = new Elysia()
   .use(ticketRoutes)
   .use(scoreboardRoutes)
   .use(dashboardRoutes)
+  .use(createWebSocketHandler())
   .listen(3000);
 
 export type App = typeof app;
