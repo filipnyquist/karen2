@@ -2,6 +2,7 @@ import { Elysia, t } from "elysia";
 import { eq, and } from "drizzle-orm";
 import { db, events, eventWorkers, users, userEducations } from "../db";
 import { authMiddleware, requireAuth } from "../middleware/auth";
+import { ws } from "../ws";
 
 export const eventWorkerRoutes = new Elysia({ prefix: "/events/:eventId" })
   .use(authMiddleware)
@@ -81,6 +82,30 @@ export const eventWorkerRoutes = new Elysia({ prefix: "/events/:eventId" })
       })
       .returning();
 
+    // Get user info for broadcast
+    const userInfo = await db.query.users.findFirst({
+      where: eq(users.id, userId),
+      columns: {
+        id: true,
+        name: true,
+        profilePicture: true,
+      },
+    });
+
+    // Broadcast to WebSocket subscribers
+    ws.broadcastToEvent(eventId, {
+      type: "worker_signup",
+      eventId,
+      data: {
+        workerId: signup.id,
+        userId,
+        user: userInfo,
+        isResponsible,
+        createdAt: signup.createdAt,
+      },
+      timestamp: new Date().toISOString(),
+    });
+
     return {
       message: isResponsible
         ? "You are signed up as responsible for this event"
@@ -145,6 +170,18 @@ export const eventWorkerRoutes = new Elysia({ prefix: "/events/:eventId" })
     await db
       .delete(eventWorkers)
       .where(eq(eventWorkers.id, signup.id));
+
+    // Broadcast to WebSocket subscribers
+    ws.broadcastToEvent(eventId, {
+      type: "worker_cancel",
+      eventId,
+      data: {
+        signupId: signup.id,
+        userId,
+        removedBy: userId,
+      },
+      timestamp: new Date().toISOString(),
+    });
 
     return { message: "Signup removed successfully" };
   }, {

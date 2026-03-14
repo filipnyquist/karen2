@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { eden } from "../eden";
 import { useAuth } from "../contexts/AuthContext";
+import { useEventSubscription } from "../contexts/WebSocketContext";
 import { Comments } from "../components/Comments";
 import { TicketGenerator } from "../components/TicketGenerator";
 import { TicketRedeemer } from "../components/TicketRedeemer";
@@ -69,11 +70,68 @@ export function EventDetails() {
   const [error, setError] = useState("");
   const [isSignedUp, setIsSignedUp] = useState(false);
 
+  // WebSocket message handler for real-time updates
+  const handleWebSocketMessage = useCallback((message: { type: string; data?: { user?: { id: string; name: string }; workerId?: string; userId?: string } }) => {
+    switch (message.type) {
+      case "worker_signup": {
+        // Refresh event data when someone signs up
+        fetchEvent();
+        // Show toast notification if it's not the current user
+        if (message.data?.user?.id !== user?.id) {
+          showToast(`${message.data?.user?.name} signed up to work`, "info");
+        }
+        break;
+      }
+      case "worker_cancel": {
+        // Refresh event data when someone cancels
+        fetchEvent();
+        break;
+      }
+      case "comment": {
+        // Comments component handles its own updates via refresh
+        break;
+      }
+      case "guest_signup": {
+        // Refresh event data when guest is added
+        fetchEvent();
+        break;
+      }
+    }
+  }, [user?.id]);
+
+  // Subscribe to WebSocket updates for this event
+  useEventSubscription(id || "", handleWebSocketMessage);
+
   useEffect(() => {
     fetchEvent();
   }, [id]);
 
-  async function fetchEvent() {
+  // Toast notification helper
+  function showToast(message: string, type: "info" | "success" | "warning" | "error" = "info") {
+    // Create toast element
+    const toast = document.createElement("div");
+    const alertClass = {
+      info: "alert-info",
+      success: "alert-success",
+      warning: "alert-warning",
+      error: "alert-error",
+    }[type];
+
+    toast.className = `alert ${alertClass} shadow-lg fixed bottom-4 right-4 z-50 max-w-sm animate-fade-in`;
+    toast.innerHTML = `
+      <span>${message}</span>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+      toast.classList.add("animate-fade-out");
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  const fetchEvent = useCallback(async () => {
     if (!id) return;
     setIsLoading(true);
     const { data, error } = await eden.events[id].get();
@@ -89,7 +147,7 @@ export function EventDetails() {
       setIsSignedUp(allWorkers.some((w: Worker) => w.user.id === user?.id));
     }
     setIsLoading(false);
-  }
+  }, [id, user?.id]);
 
   async function handleSignup() {
     if (!user || !id) {

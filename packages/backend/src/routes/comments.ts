@@ -2,6 +2,7 @@ import { Elysia, t } from "elysia";
 import { eq, and, desc } from "drizzle-orm";
 import { db, events, eventComments } from "../db";
 import { authMiddleware, requireAuth, isAdmin } from "../middleware/auth";
+import { ws } from "../ws";
 
 export const commentRoutes = new Elysia({ prefix: "/events/:eventId" })
   .use(authMiddleware)
@@ -83,6 +84,19 @@ export const commentRoutes = new Elysia({ prefix: "/events/:eventId" })
           },
         },
       },
+    });
+
+    // Broadcast to WebSocket subscribers
+    ws.broadcastToEvent(eventId, {
+      type: "comment",
+      eventId,
+      data: {
+        id: commentWithUser!.id,
+        content: commentWithUser!.content,
+        user: commentWithUser!.user,
+        createdAt: commentWithUser!.createdAt,
+      },
+      timestamp: new Date().toISOString(),
     });
 
     set.status = 201;
