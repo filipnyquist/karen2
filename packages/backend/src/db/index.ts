@@ -12,3 +12,4 @@ const pool = new Pool({
 
 export const db = drizzle(pool, { schema });
 export * from "./schema";
+export { redis, getCachedOrFetch, invalidateCachePattern, generateCacheKey } from "./redis";
