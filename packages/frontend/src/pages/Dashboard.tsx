@@ -285,7 +285,7 @@ export function Dashboard() {
                       <Search className="w-4 h-4 mr-2" />
                       Find Events
                     </Link>
-                    <Link to="/tickets" className="btn btn-outline w-full justify-start">
+                    <Link to="/my-tickets" className="btn btn-outline w-full justify-start">
                       <Ticket className="w-4 h-4 mr-2" />
                       My Tickets
                     </Link>

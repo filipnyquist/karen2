@@ -22,6 +22,8 @@ import { AdminUserDetail } from "./pages/admin/AdminUserDetail";
 import { AdminEvents } from "./pages/admin/AdminEvents";
 import { AdminLocations } from "./pages/admin/AdminLocations";
 import { AdminFrontpage } from "./pages/admin/AdminFrontpage";
+import { CreateEvent } from "./pages/admin/CreateEvent";
+import { EditEvent } from "./pages/admin/EditEvent";
 
 function App() {
   return (
@@ -101,6 +103,22 @@ function App() {
           element={
             <ProtectedRoute requiredRole="admin">
               <AdminEvents />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/events/new"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <CreateEvent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/events/:id/edit"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <EditEvent />
             </ProtectedRoute>
           }
         />
