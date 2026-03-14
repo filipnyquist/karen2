@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { eden } from "../eden";
 import { useAuth } from "../contexts/AuthContext";
+import { Comments } from "../components/Comments";
 import {
   Calendar,
   MapPin,
@@ -434,6 +435,11 @@ export function EventDetails() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Comments Section */}
+      <div className="mt-8">
+        <Comments eventId={event.id} />
       </div>
     </div>
   );

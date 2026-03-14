@@ -10,6 +10,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { Profile } from "./pages/Profile";
 import { Events } from "./pages/Events";
 import { EventDetails } from "./pages/EventDetails";
+import { GuestList } from "./pages/GuestList";
 import { Locations } from "./pages/Locations";
 import { LocationDetails } from "./pages/LocationDetails";
 import { Scoreboard } from "./pages/Scoreboard";
@@ -22,6 +23,11 @@ function App() {
         <Route index element={<Home />} />
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetails />} />
+        <Route path="/events/:id/guests" element={
+          <ProtectedRoute>
+            <GuestList />
+          </ProtectedRoute>
+        } />
         <Route path="/locations" element={<Locations />} />
         <Route path="/locations/:id" element={<LocationDetails />} />
         <Route path="/scoreboard" element={<Scoreboard />} />
