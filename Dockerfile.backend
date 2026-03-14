@@ -1,0 +1,51 @@
+# Backend Dockerfile for Karen2
+# Multi-stage build for optimized production image
+
+# Stage 1: Dependencies
+FROM oven/bun:1.2-slim AS deps
+WORKDIR /app
+
+# Copy package files
+COPY package.json bun.lockb ./
+COPY packages/backend/package.json ./packages/backend/
+
+# Install dependencies
+RUN bun install --frozen-lockfile
+
+# Stage 2: Builder
+FROM oven/bun:1.2-slim AS builder
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/packages/backend/node_modules ./packages/backend/node_modules
+
+# Copy source code
+COPY packages/backend ./packages/backend
+COPY package.json bun.lockb ./
+
+# Build the application (transpile TypeScript)
+RUN cd packages/backend && bun build src/index.ts --outdir dist --target bun
+
+# Stage 3: Production
+FROM oven/bun:1.2-slim AS production
+WORKDIR /app
+
+# Set environment
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Copy built application
+COPY --from=builder /app/packages/backend/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages/backend/package.json ./
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD bun -e "fetch('http://localhost:3000/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
+
+# Start the application
+CMD ["bun", "run", "dist/index.js"]

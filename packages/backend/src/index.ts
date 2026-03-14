@@ -15,7 +15,7 @@ import { scoreboardRoutes } from "./routes/scoreboard";
 import { authMiddleware } from "./middleware/auth";
 
 const app: Elysia = new Elysia()
-  .use(cors({ origin: "http://localhost:5173", credentials: true }))
+  .use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173", credentials: true }))
   .use(authMiddleware)
   .get("/health", () => ({ status: "ok", timestamp: new Date().toISOString() }))
   .use(authRoutes)

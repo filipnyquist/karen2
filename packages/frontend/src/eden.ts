@@ -4,8 +4,11 @@ import { treaty } from "@elysiajs/eden";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EdenClient = any;
 
+// Use environment variable for API URL, fallback to localhost
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 // Use explicit type annotation to prevent inference issues
-export const eden: EdenClient = treaty("http://localhost:3000", {
+export const eden: EdenClient = treaty(API_URL, {
   fetch: {
     credentials: "include",
   },
