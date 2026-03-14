@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { WebSocketProvider } from "./contexts/WebSocketContext";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
@@ -24,7 +25,8 @@ import { AdminFrontpage } from "./pages/admin/AdminFrontpage";
 
 function App() {
   return (
-    <Routes>
+    <WebSocketProvider>
+      <Routes>
       <Route path="/" element={<Layout />}>
         {/* Public routes */}
         <Route index element={<Home />} />
@@ -120,6 +122,7 @@ function App() {
         />
       </Route>
     </Routes>
+    </WebSocketProvider>
   );
 }
 
