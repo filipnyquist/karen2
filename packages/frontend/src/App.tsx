@@ -9,7 +9,9 @@ import { ForgotPassword } from "./pages/ForgotPassword";
 import { Dashboard } from "./pages/Dashboard";
 import { Profile } from "./pages/Profile";
 import { Events } from "./pages/Events";
+import { EventDetails } from "./pages/EventDetails";
 import { Locations } from "./pages/Locations";
+import { LocationDetails } from "./pages/LocationDetails";
 import { Scoreboard } from "./pages/Scoreboard";
 
 function App() {
@@ -19,7 +21,9 @@ function App() {
         {/* Public routes */}
         <Route index element={<Home />} />
         <Route path="/events" element={<Events />} />
+        <Route path="/events/:id" element={<EventDetails />} />
         <Route path="/locations" element={<Locations />} />
+        <Route path="/locations/:id" element={<LocationDetails />} />
         <Route path="/scoreboard" element={<Scoreboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
