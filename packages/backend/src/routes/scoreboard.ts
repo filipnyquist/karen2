@@ -1,13 +1,28 @@
 import { Elysia, t } from "elysia";
 import { eq, and, gte, lte, desc, count, sql } from "drizzle-orm";
-import { db, eventWorkers, events, users } from "../db";
+import { db, eventWorkers, events, users, redis, generateCacheKey } from "../db";
 import { authMiddleware } from "../middleware/auth";
+
+const SCOREBOARD_CACHE_TTL = 300; // 5 minutes
 
 export const scoreboardRoutes = new Elysia({ prefix: "/scoreboard" })
   .use(authMiddleware)
   // Get scoreboard with optional time period filter
   .get("/", async ({ query }) => {
     const { period = "all" } = query;
+
+    // Build cache key based on period
+    const cacheKey = generateCacheKey("scoreboard", period);
+
+    // Try to get from cache
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch {
+        // Invalid cache, continue to fetch
+      }
+    }
 
     // Build date filters based on period
     const now = new Date();
@@ -79,11 +94,16 @@ export const scoreboardRoutes = new Elysia({ prefix: "/scoreboard" })
       eventsWorked: stat.count,
     }));
 
-    return {
+    const result = {
       period,
       periodLabel: getPeriodLabel(period, startDate, endDate),
       scoreboard: rankedStats,
     };
+
+    // Cache the result
+    await redis.set(cacheKey, JSON.stringify(result), SCOREBOARD_CACHE_TTL);
+
+    return result;
   }, {
     query: t.Object({
       period: t.Optional(t.Union([t.Literal("all"), t.Literal("year"), t.Literal("semester"), t.Literal("month")])),
@@ -94,6 +114,19 @@ export const scoreboardRoutes = new Elysia({ prefix: "/scoreboard" })
     if (!user) {
       set.status = 401;
       return { error: "Unauthorized" };
+    }
+
+    // Build cache key for user stats
+    const cacheKey = generateCacheKey("scoreboard", "user", user.id);
+
+    // Try to get from cache
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch {
+        // Invalid cache, continue to fetch
+      }
     }
 
     // Count events worked
@@ -125,12 +158,17 @@ export const scoreboardRoutes = new Elysia({ prefix: "/scoreboard" })
 
     const rank = higherRanked.length + 1;
 
-    return {
+    const result = {
       userId: user.id,
       name: user.name,
       eventsWorked: countValue,
       rank: countValue > 0 ? rank : null,
     };
+
+    // Cache the result (shorter TTL for user-specific data)
+    await redis.set(cacheKey, JSON.stringify(result), 60); // 1 minute
+
+    return result;
   });
 
 function getPeriodLabel(period: string, startDate?: Date, endDate?: Date): string {
