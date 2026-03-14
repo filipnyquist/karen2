@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { jwt } from "@elysiajs/jwt";
 import { db, users, type UserRole } from "../db";
 import { hashPassword, verifyPassword } from "../lib/password";
@@ -43,8 +43,16 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       // Hash password
       const hashedPassword = await hashPassword(password);
 
-      // Generate verification token
-      const verificationToken = generateToken();
+      // Check if this is the first user in development mode
+      const isFirstUser =
+        process.env.NODE_ENV === "development" &&
+        (await db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(users)
+          .then((r) => r[0].count === 0));
+
+      // Generate verification token (only needed for non-first users)
+      const verificationToken = isFirstUser ? null : generateToken();
 
       // Create user
       const [newUser] = await db
@@ -54,6 +62,8 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
           name,
           password: hashedPassword,
           emailVerificationToken: verificationToken,
+          role: isFirstUser ? "superadmin" : undefined,
+          emailVerified: isFirstUser ? true : undefined,
         })
         .returning({
           id: users.id,
@@ -62,13 +72,15 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
           role: users.role,
         });
 
-      // Send verification email
-      const verificationUrl = `${process.env.FRONTEND_URL || "http://localhost:5173"}/verify-email?token=${verificationToken}`;
-      await sendEmail({
-        to: email,
-        subject: "Verify your email - Karen2",
-        html: generateVerificationEmailHtml(name, verificationUrl),
-      });
+      // Send verification email (skip for first user in dev)
+      if (!isFirstUser) {
+        const verificationUrl = `${process.env.FRONTEND_URL || "http://localhost:5173"}/verify-email?token=${verificationToken}`;
+        await sendEmail({
+          to: email,
+          subject: "Verify your email - Karen2",
+          html: generateVerificationEmailHtml(name, verificationUrl),
+        });
+      }
 
       // Generate JWT
       const token = await jwt.sign({
@@ -78,8 +90,9 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       });
 
       return {
-        message:
-          "Registration successful. Please check your email to verify your account.",
+        message: isFirstUser
+          ? "Registration successful. Welcome, superadmin!"
+          : "Registration successful. Please check your email to verify your account.",
         user: newUser,
         token,
       };
