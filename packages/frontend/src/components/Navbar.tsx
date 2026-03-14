@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { Calendar, MapPin, Trophy, Menu, X, User, LogOut } from "lucide-react";
+import { Calendar, MapPin, Trophy, Menu, X, User, LogOut, Ticket } from "lucide-react";
 import { useState } from "react";
 
 export function Navbar() {
@@ -76,6 +76,11 @@ export function Navbar() {
                 <li>
                   <Link to="/profile">Profile</Link>
                 </li>
+                <li>
+                  <Link to="/my-tickets">
+                    <Ticket className="w-4 h-4" /> My Tickets
+                  </Link>
+                </li>
                 {(user.role === "admin" || user.role === "superadmin") && (
                   <li>
                     <Link to="/admin">Admin</Link>
@@ -146,6 +151,15 @@ export function Navbar() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <User className="w-4 h-4" /> Profile
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/my-tickets"
+                    className={isActive("/my-tickets") ? "active" : ""}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Ticket className="w-4 h-4" /> My Tickets
                   </Link>
                 </li>
                 {(user.role === "admin" || user.role === "superadmin") && (

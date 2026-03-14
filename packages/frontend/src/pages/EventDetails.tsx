@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { eden } from "../eden";
 import { useAuth } from "../contexts/AuthContext";
 import { Comments } from "../components/Comments";
+import { TicketGenerator } from "../components/TicketGenerator";
+import { TicketRedeemer } from "../components/TicketRedeemer";
 import {
   Calendar,
   MapPin,
@@ -179,6 +181,12 @@ export function EventDetails() {
     event.status === "open" &&
     new Date(event.startTime) > new Date() &&
     !isEventFull;
+
+  // Check if user is responsible for this event
+  const isResponsible = event.workers.responsible.some(
+    (w: Worker) => w.user.id === user?.id
+  );
+  const canManageTickets = user?.role === "admin" || user?.role === "superadmin" || isResponsible;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -364,6 +372,24 @@ export function EventDetails() {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Ticket Management - Only visible to responsible/admin */}
+          {canManageTickets && event.status !== "canceled" && (
+            <>
+              <TicketGenerator
+                eventId={event.id}
+                workers={[
+                  ...event.workers.responsible,
+                  ...event.workers.regular,
+                ]}
+                canGenerate={canManageTickets}
+              />
+              <TicketRedeemer
+                eventId={event.id}
+                canRedeem={canManageTickets}
+              />
+            </>
+          )}
+
           {/* Event Info */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">

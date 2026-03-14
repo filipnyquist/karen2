@@ -14,6 +14,7 @@ import { GuestList } from "./pages/GuestList";
 import { Locations } from "./pages/Locations";
 import { LocationDetails } from "./pages/LocationDetails";
 import { Scoreboard } from "./pages/Scoreboard";
+import { MyTickets } from "./pages/MyTickets";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminUsers } from "./pages/admin/AdminUsers";
 import { AdminUserDetail } from "./pages/admin/AdminUserDetail";
@@ -56,6 +57,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-tickets"
+          element={
+            <ProtectedRoute>
+              <MyTickets />
             </ProtectedRoute>
           }
         />
