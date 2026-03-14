@@ -14,6 +14,12 @@ import { GuestList } from "./pages/GuestList";
 import { Locations } from "./pages/Locations";
 import { LocationDetails } from "./pages/LocationDetails";
 import { Scoreboard } from "./pages/Scoreboard";
+import { AdminDashboard } from "./pages/admin/AdminDashboard";
+import { AdminUsers } from "./pages/admin/AdminUsers";
+import { AdminUserDetail } from "./pages/admin/AdminUserDetail";
+import { AdminEvents } from "./pages/admin/AdminEvents";
+import { AdminLocations } from "./pages/admin/AdminLocations";
+import { AdminFrontpage } from "./pages/admin/AdminFrontpage";
 
 function App() {
   return (
@@ -59,10 +65,47 @@ function App() {
           path="/admin"
           element={
             <ProtectedRoute requiredRole="admin">
-              <div className="container mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                <p>Admin functionality coming soon...</p>
-              </div>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users/:id"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminUserDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/events"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminEvents />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/locations"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminLocations />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/frontpage"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminFrontpage />
             </ProtectedRoute>
           }
         />

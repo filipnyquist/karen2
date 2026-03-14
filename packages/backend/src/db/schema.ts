@@ -241,6 +241,7 @@ export const skipQueueTickets = pgTable("skip_queue_tickets", {
 // Front page notice
 export const frontPageNotices = pgTable("front_page_notices", {
   id: uuid("id").defaultRandom().primaryKey(),
+  title: varchar("title", { length: 255 }),
   content: text("content").notNull(),
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })

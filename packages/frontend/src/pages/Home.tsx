@@ -1,7 +1,63 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, MapPin, Trophy, ArrowRight } from "lucide-react";
+import { eden } from "../eden";
+import {
+  Calendar,
+  MapPin,
+  Trophy,
+  ArrowRight,
+  FileText,
+  Users,
+  Clock,
+} from "lucide-react";
+
+interface Notice {
+  id: string;
+  title: string | null;
+  content: string;
+  isActive: boolean;
+}
+
+interface Event {
+  id: string;
+  title: string;
+  timeDisplay: string;
+  location: { name: string };
+  workerCount: number;
+  maxWorkers: number;
+  responsibleCount: number;
+  maxResponsible: number;
+}
 
 export function Home() {
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  async function fetchData() {
+    setIsLoading(true);
+
+    // Fetch notice and events in parallel
+    const [{ data: noticeData }, { data: eventsData }] = await Promise.all([
+      eden.events["frontpage-notice"].get(),
+      eden.events.get({ query: { limit: "5", status: "open" } }),
+    ]);
+
+    if (noticeData?.notice) {
+      setNotice(noticeData.notice);
+    }
+
+    if (eventsData?.events) {
+      setUpcomingEvents(eventsData.events);
+    }
+
+    setIsLoading(false);
+  }
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -27,6 +83,23 @@ export function Home() {
           </div>
         </div>
       </section>
+
+      {/* Notice Section */}
+      {notice?.isActive && (
+        <section className="py-8 px-4 bg-info/10">
+          <div className="max-w-4xl mx-auto">
+            <div className="alert alert-info">
+              <FileText className="w-6 h-6" />
+              <div>
+                {notice.title && (
+                  <h2 className="font-bold text-lg">{notice.title}</h2>
+                )}
+                <div className="whitespace-pre-wrap">{notice.content}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <section className="py-20 px-4">
@@ -54,7 +127,7 @@ export function Home() {
                 </div>
                 <h3 className="card-title">Manage Guest Lists</h3>
                 <p className="text-base-content/70">
-                  Add guests to events and keep track of who's coming.
+                  Add guests to events and keep track of who&apos;s coming.
                 </p>
               </div>
             </div>
@@ -83,10 +156,45 @@ export function Home() {
               View All <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="text-center py-12 text-base-content/60">
-            <p>No upcoming events at the moment.</p>
-            <p className="text-sm mt-2">Check back soon for new events!</p>
-          </div>
+
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <span className="loading loading-spinner loading-lg"></span>
+            </div>
+          ) : upcomingEvents.length === 0 ? (
+            <div className="text-center py-12 text-base-content/60">
+              <p>No upcoming events at the moment.</p>
+              <p className="text-sm mt-2">Check back soon for new events!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcomingEvents.map((event) => (
+                <Link
+                  key={event.id}
+                  to={`/events/${event.id}`}
+                  className="card bg-base-200 hover:bg-base-300 transition-colors"
+                >
+                  <div className="card-body">
+                    <h3 className="card-title">{event.title}</h3>
+                    <div className="space-y-2 text-sm text-base-content/70 mt-2">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        {event.timeDisplay}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        {event.location?.name}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4" />
+                        {event.responsibleCount}/{event.maxResponsible} responsible, {event.workerCount}/{event.maxWorkers} workers
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>

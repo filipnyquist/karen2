@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 import { eq, and, gte, lte, desc, asc, sql } from "drizzle-orm";
-import { db, events, locations, eventWorkers, users, eventStatusEnum, eventTypeEnum } from "../db";
+import { db, events, locations, eventWorkers, users, eventStatusEnum, eventTypeEnum, frontPageNotices } from "../db";
 import { authMiddleware, requireAdmin, requireAuth } from "../middleware/auth";
 
 // Helper function to format event time for display
@@ -26,6 +26,17 @@ function formatEventTime(startTime: Date, endTime: Date): string {
 
 export const eventRoutes = new Elysia({ prefix: "/events" })
   .use(authMiddleware)
+  // Get active frontpage notice (public)
+  .get("/frontpage-notice", async () => {
+    const notice = await db.query.frontPageNotices.findFirst({
+      where: eq(frontPageNotices.isActive, true),
+      orderBy: [desc(frontPageNotices.updatedAt)],
+    });
+
+    return {
+      notice: notice || null,
+    };
+  })
   // List events with filters
   .get("/", async ({ query }) => {
     const {

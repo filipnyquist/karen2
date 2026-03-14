@@ -6,6 +6,10 @@ import { eventRoutes } from "./routes/events";
 import { eventWorkerRoutes } from "./routes/eventWorkers";
 import { guestListRoutes } from "./routes/guestLists";
 import { commentRoutes } from "./routes/comments";
+import { adminUserRoutes } from "./routes/adminUsers";
+import { adminEducationRoutes } from "./routes/adminEducations";
+import { adminFrontpageRoutes } from "./routes/adminFrontpage";
+import { eventReportRoutes } from "./routes/eventReports";
 import { authMiddleware } from "./middleware/auth";
 
 const app: Elysia = new Elysia()
@@ -18,6 +22,10 @@ const app: Elysia = new Elysia()
   .use(eventWorkerRoutes)
   .use(guestListRoutes)
   .use(commentRoutes)
+  .use(adminUserRoutes)
+  .use(adminEducationRoutes)
+  .use(adminFrontpageRoutes)
+  .use(eventReportRoutes)
   .listen(3000);
 
 export type App = typeof app;
