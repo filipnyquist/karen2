@@ -8,9 +8,10 @@ WORKDIR /app
 # Copy package files
 COPY package.json bun.lock ./
 COPY packages/frontend/package.json ./packages/frontend/
+COPY tsconfig.json ./
 
 # Install dependencies
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Copy source code
 COPY packages/frontend ./packages/frontend
