@@ -11,6 +11,7 @@ import { adminEducationRoutes } from "./routes/adminEducations";
 import { adminFrontpageRoutes } from "./routes/adminFrontpage";
 import { eventReportRoutes } from "./routes/eventReports";
 import { ticketRoutes } from "./routes/tickets";
+import { scoreboardRoutes } from "./routes/scoreboard";
 import { authMiddleware } from "./middleware/auth";
 
 const app: Elysia = new Elysia()
@@ -28,6 +29,7 @@ const app: Elysia = new Elysia()
   .use(adminFrontpageRoutes)
   .use(eventReportRoutes)
   .use(ticketRoutes)
+  .use(scoreboardRoutes)
   .listen(3000);
 
 export type App = typeof app;
