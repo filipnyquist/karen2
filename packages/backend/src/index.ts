@@ -13,6 +13,7 @@ import { eventReportRoutes } from "./routes/eventReports";
 import { ticketRoutes } from "./routes/tickets";
 import { scoreboardRoutes } from "./routes/scoreboard";
 import { dashboardRoutes } from "./routes/dashboard";
+import { userRoutes } from "./routes/users";
 import { authMiddleware } from "./middleware/auth";
 import { createWebSocketHandler } from "./ws";
 
@@ -33,6 +34,7 @@ const app: Elysia = new Elysia()
   .use(ticketRoutes)
   .use(scoreboardRoutes)
   .use(dashboardRoutes)
+  .use(userRoutes)
   .use(createWebSocketHandler())
   .listen(3000);
 

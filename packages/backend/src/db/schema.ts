@@ -50,6 +50,7 @@ export const users = pgTable(
     password: varchar("password", { length: 255 }).notNull(),
     role: userRoleEnum("role").default("unverified").notNull(),
     profilePicture: varchar("profile_picture", { length: 255 }),
+    nickname: varchar("nickname", { length: 255 }),
     deactivated: boolean("deactivated").default(false).notNull(),
     passwordResetToken: varchar("password_reset_token", { length: 255 }),
     passwordResetExpires: timestamp("password_reset_expires", {

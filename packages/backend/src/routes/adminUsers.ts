@@ -50,28 +50,47 @@ export const adminUserRoutes = new Elysia({ prefix: "/admin" })
         id: true,
         email: true,
         name: true,
+        nickname: true,
         role: true,
         emailVerified: true,
         deactivated: true,
         createdAt: true,
         profilePicture: true,
       },
-      with: {
-        educations: true,
-      },
     });
+
+    // Fetch educations separately to avoid relation ambiguity
+    const userIds = userList.map(u => u.id);
+    const educationsList = userIds.length > 0
+      ? await db.select({
+          userId: userEducations.userId,
+          educationType: userEducations.educationType,
+        })
+        .from(userEducations)
+        .where(sql`${userEducations.userId} IN ${userIds}`)
+      : [];
+
+    // Group educations by user
+    const educationsByUser = new Map<string, string[]>();
+    for (const edu of educationsList) {
+      if (!educationsByUser.has(edu.userId)) {
+        educationsByUser.set(edu.userId, []);
+      }
+      educationsByUser.get(edu.userId)!.push(edu.educationType);
+    }
 
     return {
       users: userList.map((u) => ({
         id: u.id,
         email: u.email,
         name: u.name,
+        nickname: u.nickname,
         role: u.role,
         emailVerified: u.emailVerified,
         deactivated: u.deactivated,
         createdAt: u.createdAt,
         profilePicture: u.profilePicture,
-        educations: u.educations.map((e) => e.educationType),
+        educations: educationsByUser.get(u.id) || [],
       })),
       pagination: {
         page: pageNum,
@@ -97,23 +116,12 @@ export const adminUserRoutes = new Elysia({ prefix: "/admin" })
         id: true,
         email: true,
         name: true,
+        nickname: true,
         role: true,
         emailVerified: true,
         deactivated: true,
         createdAt: true,
         profilePicture: true,
-      },
-      with: {
-        educations: {
-          with: {
-            assignedByUser: {
-              columns: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
       },
     });
 
@@ -121,6 +129,37 @@ export const adminUserRoutes = new Elysia({ prefix: "/admin" })
       set.status = 404;
       return { error: "User not found" };
     }
+
+    // Fetch educations separately to avoid relation ambiguity
+    const userEducationsList = await db
+      .select({
+        id: userEducations.id,
+        educationType: userEducations.educationType,
+        assignedBy: userEducations.assignedBy,
+        assignedAt: userEducations.assignedAt,
+      })
+      .from(userEducations)
+      .where(eq(userEducations.userId, params.id));
+
+    // Fetch assigner info for each education
+    const assignerIds = [...new Set(userEducationsList.map(e => e.assignedBy).filter(Boolean))];
+    const assigners = assignerIds.length > 0
+      ? await db
+          .select({
+            id: users.id,
+            name: users.name,
+          })
+          .from(users)
+          .where(sql`${users.id} IN ${assignerIds}`)
+      : [];
+    const assignerMap = new Map(assigners.map(a => [a.id, a]));
+
+    const educationsWithAssigners = userEducationsList.map(e => ({
+      id: e.id,
+      type: e.educationType,
+      assignedBy: e.assignedBy ? assignerMap.get(e.assignedBy) || { id: e.assignedBy, name: "Unknown" } : null,
+      assignedAt: e.assignedAt,
+    }));
 
     // Get event history
     const workedEvents = await db.query.eventWorkers.findMany({
@@ -157,17 +196,13 @@ export const adminUserRoutes = new Elysia({ prefix: "/admin" })
         id: user.id,
         email: user.email,
         name: user.name,
+        nickname: user.nickname,
         role: user.role,
         emailVerified: user.emailVerified,
         deactivated: user.deactivated,
         createdAt: user.createdAt,
         profilePicture: user.profilePicture,
-        educations: user.educations.map((e) => ({
-          id: e.id,
-          type: e.educationType,
-          assignedBy: e.assignedByUser,
-          assignedAt: e.assignedAt,
-        })),
+        educations: educationsWithAssigners,
       },
       stats: {
         eventsWorked,

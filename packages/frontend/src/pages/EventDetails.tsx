@@ -16,6 +16,7 @@ import {
   CheckCircle,
   UserPlus,
   UserMinus,
+  User,
 } from "lucide-react";
 
 interface Event {
@@ -53,9 +54,11 @@ interface Event {
 
 interface Worker {
   id: string;
+  createdAt: string;
   user: {
     id: string;
     name: string;
+    nickname?: string | null;
     profilePicture?: string;
   };
 }
@@ -193,6 +196,28 @@ export function EventDetails() {
       return e.message || e.value?.message || "An error occurred";
     }
     return "An error occurred";
+  }
+
+  function getWorkerDisplayName(worker: Worker) {
+    return worker.user.nickname || worker.user.name;
+  }
+
+  function getWorkerAvatarUrl(worker: Worker) {
+    if (worker.user.profilePicture) {
+      return worker.user.profilePicture;
+    }
+    const name = worker.user.name || "";
+    const initial = name.charAt(0).toUpperCase();
+    return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&text=${initial}`;
+  }
+
+  function formatSignupDate(dateString: string) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("sv-SE", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   }
 
   function getStatusBadge(status: string) {
@@ -380,18 +405,55 @@ export function EventDetails() {
                   No responsible assigned yet
                 </p>
               ) : (
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {event.workers.responsible.map((worker) => (
-                    <div
-                      key={worker.id}
-                      className="flex items-center gap-2 bg-base-200 rounded-full px-3 py-1"
-                    >
-                      <div className="w-8 h-8 rounded-full bg-primary text-primary-content flex items-center justify-center text-sm font-bold">
-                        {worker.user.name.charAt(0)}
-                      </div>
-                      <span className="text-sm">{worker.user.name}</span>
-                    </div>
-                  ))}
+                <div className="overflow-x-auto mt-4">
+                  <table className="table table-zebra">
+                    <thead>
+                      <tr>
+                        <th className="w-12"></th>
+                        <th>Name</th>
+                        <th className="w-32">Signed up</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {event.workers.responsible.map((worker) => (
+                        <tr key={worker.id}>
+                          <td>
+                            <div className="avatar">
+                              <div className="w-10 h-10 rounded-full">
+                                <img
+                                  src={getWorkerAvatarUrl(worker)}
+                                  alt={getWorkerDisplayName(worker)}
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = "none";
+                                    const parent = target.parentElement;
+                                    if (parent) {
+                                      parent.innerHTML = `<div class="w-full h-full bg-primary text-primary-content flex items-center justify-center text-lg font-bold">${worker.user.name.charAt(0).toUpperCase()}</div>`;
+                                    }
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="flex flex-col">
+                              <span className="font-medium">
+                                {getWorkerDisplayName(worker)}
+                              </span>
+                              {worker.user.nickname && (
+                                <span className="text-xs text-base-content/60">
+                                  {worker.user.name}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="text-sm text-base-content/70">
+                            {formatSignupDate(worker.createdAt)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
@@ -401,7 +463,7 @@ export function EventDetails() {
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
               <h2 className="card-title">
-                <Users className="w-5 h-5" />
+                <User className="w-5 h-5" />
                 Workers ({event.workers.regular.length}/{event.maxWorkers})
               </h2>
 
@@ -410,18 +472,55 @@ export function EventDetails() {
                   No workers signed up yet. Be the first!
                 </p>
               ) : (
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {event.workers.regular.map((worker) => (
-                    <div
-                      key={worker.id}
-                      className="flex items-center gap-2 bg-base-200 rounded-full px-3 py-1"
-                    >
-                      <div className="w-8 h-8 rounded-full bg-secondary text-secondary-content flex items-center justify-center text-sm font-bold">
-                        {worker.user.name.charAt(0)}
-                      </div>
-                      <span className="text-sm">{worker.user.name}</span>
-                    </div>
-                  ))}
+                <div className="overflow-x-auto mt-4">
+                  <table className="table table-zebra">
+                    <thead>
+                      <tr>
+                        <th className="w-12"></th>
+                        <th>Name</th>
+                        <th className="w-32">Signed up</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {event.workers.regular.map((worker) => (
+                        <tr key={worker.id}>
+                          <td>
+                            <div className="avatar">
+                              <div className="w-10 h-10 rounded-full">
+                                <img
+                                  src={getWorkerAvatarUrl(worker)}
+                                  alt={getWorkerDisplayName(worker)}
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = "none";
+                                    const parent = target.parentElement;
+                                    if (parent) {
+                                      parent.innerHTML = `<div class="w-full h-full bg-secondary text-secondary-content flex items-center justify-center text-lg font-bold">${worker.user.name.charAt(0).toUpperCase()}</div>`;
+                                    }
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="flex flex-col">
+                              <span className="font-medium">
+                                {getWorkerDisplayName(worker)}
+                              </span>
+                              {worker.user.nickname && (
+                                <span className="text-xs text-base-content/60">
+                                  {worker.user.name}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="text-sm text-base-content/70">
+                            {formatSignupDate(worker.createdAt)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>

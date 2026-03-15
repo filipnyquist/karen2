@@ -218,6 +218,7 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
               columns: {
                 id: true,
                 name: true,
+                nickname: true,
                 profilePicture: true,
               },
             },
@@ -263,9 +264,11 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
             .filter((w) => w.isResponsible)
             .map((w) => ({
               id: w.id,
+              createdAt: w.createdAt,
               user: {
                 id: w.user.id,
                 name: w.user.name,
+                nickname: w.user.nickname,
                 profilePicture: w.user.profilePicture,
               },
             })),
@@ -273,9 +276,11 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
             .filter((w) => !w.isResponsible)
             .map((w) => ({
               id: w.id,
+              createdAt: w.createdAt,
               user: {
                 id: w.user.id,
                 name: w.user.name,
+                nickname: w.user.nickname,
                 profilePicture: w.user.profilePicture,
               },
             })),
