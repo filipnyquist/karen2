@@ -25,6 +25,7 @@ const WebSocketContext = createContext<WebSocketContextType | undefined>(undefin
 const WS_URL = import.meta.env.VITE_WS_URL?.trim() || "/ws";
 const RECONNECT_DELAY = 3000; // 3 seconds
 const MAX_RECONNECT_ATTEMPTS = 5;
+const PING_INTERVAL = 30000; // 30 seconds - keepalive to prevent nginx timeout
 
 export function WebSocketProvider({ children }: { children: ReactNode }) {
   const [isConnected, setIsConnected] = useState(false);
@@ -34,6 +35,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handlersRef = useRef<Map<string, Set<MessageHandler>>>(new Map());
   const pendingSubscriptionsRef = useRef<Set<string>>(new Set());
+  const pingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Connect to WebSocket
   const connect = useCallback(() => {
@@ -58,6 +60,13 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
         pendingSubscriptionsRef.current.forEach((eventId) => {
           ws.send(JSON.stringify({ type: "subscribe", eventId }));
         });
+
+        // Start keepalive ping to prevent nginx idle timeout
+        pingIntervalRef.current = setInterval(() => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: "ping" }));
+          }
+        }, PING_INTERVAL);
       };
 
       ws.onmessage = (event) => {
@@ -104,6 +113,12 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(false);
         wsRef.current = null;
 
+        // Clear ping interval
+        if (pingIntervalRef.current) {
+          clearInterval(pingIntervalRef.current);
+          pingIntervalRef.current = null;
+        }
+
         // Attempt to reconnect
         if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
           reconnectAttemptsRef.current++;
@@ -125,6 +140,10 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
+    }
+    if (pingIntervalRef.current) {
+      clearInterval(pingIntervalRef.current);
+      pingIntervalRef.current = null;
     }
     reconnectAttemptsRef.current = MAX_RECONNECT_ATTEMPTS; // Prevent auto-reconnect
 
