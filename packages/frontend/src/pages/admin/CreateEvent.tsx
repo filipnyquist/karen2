@@ -64,6 +64,18 @@ export function CreateEvent() {
       return;
     }
 
+    if (!(startTime instanceof Date) || isNaN(startTime.getTime())) {
+      setError("Invalid start time");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!(endTime instanceof Date) || isNaN(endTime.getTime())) {
+      setError("Invalid end time");
+      setIsLoading(false);
+      return;
+    }
+
     const payload = {
       title,
       description: description || undefined,
