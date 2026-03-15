@@ -262,16 +262,22 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
           responsible: event.workers
             .filter((w) => w.isResponsible)
             .map((w) => ({
-              id: w.user.id,
-              name: w.user.name,
-              profilePicture: w.user.profilePicture,
+              id: w.id,
+              user: {
+                id: w.user.id,
+                name: w.user.name,
+                profilePicture: w.user.profilePicture,
+              },
             })),
           regular: event.workers
             .filter((w) => !w.isResponsible)
             .map((w) => ({
-              id: w.user.id,
-              name: w.user.name,
-              profilePicture: w.user.profilePicture,
+              id: w.id,
+              user: {
+                id: w.user.id,
+                name: w.user.name,
+                profilePicture: w.user.profilePicture,
+              },
             })),
         },
       },
