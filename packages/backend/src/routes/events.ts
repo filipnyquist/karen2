@@ -262,16 +262,22 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
           responsible: event.workers
             .filter((w) => w.isResponsible)
             .map((w) => ({
-              id: w.user.id,
-              name: w.user.name,
-              profilePicture: w.user.profilePicture,
+              id: w.id,
+              user: {
+                id: w.user.id,
+                name: w.user.name,
+                profilePicture: w.user.profilePicture,
+              },
             })),
           regular: event.workers
             .filter((w) => !w.isResponsible)
             .map((w) => ({
-              id: w.user.id,
-              name: w.user.name,
-              profilePicture: w.user.profilePicture,
+              id: w.id,
+              user: {
+                id: w.user.id,
+                name: w.user.name,
+                profilePicture: w.user.profilePicture,
+              },
             })),
         },
       },
@@ -282,7 +288,7 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     return result;
   }, {
     params: t.Object({
-      id: t.String(),
+      eventId: t.String(),
     }),
   })
   // Create event (admin only)
@@ -426,7 +432,7 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     };
   }, {
     params: t.Object({
-      id: t.String(),
+      eventId: t.String(),
     }),
     body: t.Object({
       title: t.Optional(t.String({ minLength: 1, maxLength: 255 })),
@@ -467,7 +473,7 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     return { message: "Event deleted successfully" };
   }, {
     params: t.Object({
-      id: t.String(),
+      eventId: t.String(),
     }),
     beforeHandle: [requireAdmin],
   });
