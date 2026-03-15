@@ -2,73 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* React DatePicker custom styles for DaisyUI compatibility */
-.react-datepicker {
-  font-family: inherit;
-  border: 1px solid hsl(var(--b3));
-  border-radius: var(--rounded-btn, 0.5rem);
-  background-color: hsl(var(--b1));
-}
-
-.react-datepicker__header {
-  background-color: hsl(var(--b2));
-  border-bottom: 1px solid hsl(var(--b3));
-}
-
-.react-datepicker__current-month,
-.react-datepicker__day-name {
-  color: hsl(var(--bc));
-}
-
-.react-datepicker__day {
-  color: hsl(var(--bc));
-}
-
-.react-datepicker__day:hover {
-  background-color: hsl(var(--p));
-  color: hsl(var(--pc));
-}
-
-.react-datepicker__day--selected,
-.react-datepicker__day--keyboard-selected {
-  background-color: hsl(var(--p));
-  color: hsl(var(--pc));
-}
-
-.react-datepicker__day--disabled {
-  color: hsl(var(--bc) / 0.3);
-}
-
-.react-datepicker__time-container {
-  border-left: 1px solid hsl(var(--b3));
-}
-
-.react-datepicker__time-box {
-  background-color: hsl(var(--b1));
-}
-
-.react-datepicker__time-list-item {
-  color: hsl(var(--bc));
-}
-
-.react-datepicker__time-list-item:hover {
-  background-color: hsl(var(--p));
-  color: hsl(var(--pc));
-}
-
-.react-datepicker__time-list-item--selected {
-  background-color: hsl(var(--p)) !important;
-  color: hsl(var(--pc)) !important;
-}
-
-.react-datepicker__navigation-icon::before {
-  border-color: hsl(var(--bc));
-}
-
-.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before {
-  border-color: hsl(var(--p));
-}
-
-.react-datepicker-popper-zindex {
-  z-index: 100;
+/* react-daisyui-timetools popup z-index fix */
+.react-daisyui-datepicker-calendar,
+[data-slot="calendar"],
+.dropdown-content,
+.popup-calendar {
+  z-index: 9999 !important;
 }

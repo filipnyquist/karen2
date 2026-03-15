@@ -287,6 +287,10 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
   })
   // Create event (admin only)
   .post("/", async ({ body, user, set }) => {
+    // Convert string dates to Date objects
+    const startTime = new Date(body.startTime);
+    const endTime = new Date(body.endTime);
+
     // Verify location exists
     const location = await db.query.locations.findFirst({
       where: eq(locations.id, body.locationId),
@@ -301,8 +305,8 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     const existingEvent = await db.query.events.findFirst({
       where: and(
         eq(events.locationId, body.locationId),
-        sql`${events.startTime} < ${body.endTime}`,
-        sql`${events.endTime} > ${body.startTime}`,
+        sql`${events.startTime} < ${endTime}`,
+        sql`${events.endTime} > ${startTime}`,
         eq(events.status, "open")
       ),
     });
@@ -324,6 +328,8 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
       .insert(events)
       .values({
         ...body,
+        startTime,
+        endTime,
         createdBy: user!.id,
       })
       .returning();
@@ -367,17 +373,21 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
       return { error: "Event not found" };
     }
 
+    // Convert string dates to Date objects if provided
+    const startTime = body.startTime ? new Date(body.startTime) : undefined;
+    const endTime = body.endTime ? new Date(body.endTime) : undefined;
+
     // If changing location or time, check for double booking
-    if (body.locationId || body.startTime || body.endTime) {
+    if (body.locationId || startTime || endTime) {
       const locationId = body.locationId || existing.locationId;
-      const startTime = body.startTime || existing.startTime;
-      const endTime = body.endTime || existing.endTime;
+      const checkStartTime = startTime || existing.startTime;
+      const checkEndTime = endTime || existing.endTime;
 
       const conflictingEvent = await db.query.events.findFirst({
         where: and(
           eq(events.locationId, locationId),
-          sql`${events.startTime} < ${endTime}`,
-          sql`${events.endTime} > ${startTime}`,
+          sql`${events.startTime} < ${checkEndTime}`,
+          sql`${events.endTime} > ${checkStartTime}`,
           eq(events.status, "open"),
           sql`${events.id} != ${params.eventId}`
         ),
@@ -399,6 +409,8 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
       .update(events)
       .set({
         ...body,
+        ...(startTime && { startTime }),
+        ...(endTime && { endTime }),
         updatedAt: new Date(),
       })
       .where(eq(events.id, params.eventId))

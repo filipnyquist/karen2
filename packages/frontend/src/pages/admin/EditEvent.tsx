@@ -114,6 +114,18 @@ export function EditEvent() {
     setError("");
     setIsLoading(true);
 
+    if (startTime && (!(startTime instanceof Date) || isNaN(startTime.getTime()))) {
+      setError("Invalid start time");
+      setIsLoading(false);
+      return;
+    }
+
+    if (endTime && (!(endTime instanceof Date) || isNaN(endTime.getTime()))) {
+      setError("Invalid end time");
+      setIsLoading(false);
+      return;
+    }
+
     const payload: Record<string, unknown> = {};
 
     if (title) payload.title = title;
