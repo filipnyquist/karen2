@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 import { eq, and } from "drizzle-orm";
-import { db, events, eventWorkers, users, userEducations } from "../db";
+import { db, events, eventWorkers, users, userEducations, redis, generateCacheKey, invalidateCachePattern } from "../db";
 import { authMiddleware, requireAuth } from "../middleware/auth";
 import { ws } from "../ws";
 
@@ -106,6 +106,10 @@ export const eventWorkerRoutes = new Elysia({ prefix: "/events/:eventId" })
       timestamp: new Date().toISOString(),
     });
 
+    // Invalidate event cache to reflect new worker
+    await redis.del(generateCacheKey("events", eventId));
+    await invalidateCachePattern("events:list:*");
+
     return {
       message: isResponsible
         ? "You are signed up as responsible for this event"
@@ -182,6 +186,10 @@ export const eventWorkerRoutes = new Elysia({ prefix: "/events/:eventId" })
       },
       timestamp: new Date().toISOString(),
     });
+
+    // Invalidate event cache to reflect worker removal
+    await redis.del(generateCacheKey("events", eventId));
+    await invalidateCachePattern("events:list:*");
 
     return { message: "Signup removed successfully" };
   }, {
