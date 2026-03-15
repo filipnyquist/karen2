@@ -59,6 +59,8 @@ export const scoreboardRoutes = new Elysia({ prefix: "/scoreboard" })
     // Build the query conditions
     const conditions: (ReturnType<typeof eq> | ReturnType<typeof and> | ReturnType<typeof gte> | ReturnType<typeof lte> | undefined)[] = [
       eq(events.givesPoints, true),
+      // Only count events that have already ended
+      lte(events.endTime, now),
     ];
 
     if (startDate) {
@@ -129,7 +131,8 @@ export const scoreboardRoutes = new Elysia({ prefix: "/scoreboard" })
       }
     }
 
-    // Count events worked
+    // Count events worked (only completed events)
+    const now = new Date();
     const eventsWorked = await db
       .select({ count: count() })
       .from(eventWorkers)
@@ -137,20 +140,22 @@ export const scoreboardRoutes = new Elysia({ prefix: "/scoreboard" })
       .where(
         and(
           eq(eventWorkers.userId, user.id),
-          eq(events.givesPoints, true)
+          eq(events.givesPoints, true),
+          lte(events.endTime, now)
         )
       );
 
     const countValue = eventsWorked[0]?.count || 0;
 
-    // Get rank by counting users with more events
+    // Get rank by counting users with more events (only completed events)
     const higherRanked = await db
       .select({ userId: eventWorkers.userId })
       .from(eventWorkers)
       .innerJoin(events, eq(eventWorkers.eventId, events.id))
       .where(
         and(
-          eq(events.givesPoints, true)
+          eq(events.givesPoints, true),
+          lte(events.endTime, now)
         )
       )
       .groupBy(eventWorkers.userId)

@@ -24,6 +24,7 @@ import { AdminLocations } from "./pages/admin/AdminLocations";
 import { AdminFrontpage } from "./pages/admin/AdminFrontpage";
 import { CreateEvent } from "./pages/admin/CreateEvent";
 import { EditEvent } from "./pages/admin/EditEvent";
+import { PublicProfile } from "./pages/PublicProfile";
 
 function App() {
   return (
@@ -69,6 +70,14 @@ function App() {
           element={
             <ProtectedRoute>
               <MyTickets />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users/:id"
+          element={
+            <ProtectedRoute>
+              <PublicProfile />
             </ProtectedRoute>
           }
         />

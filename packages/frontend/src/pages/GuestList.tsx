@@ -165,7 +165,9 @@ export function GuestList() {
 
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Guest List</h1>
+          <h1 className="text-3xl font-bold">
+            {canViewFullList ? "All Guests" : "My Guests"}
+          </h1>
           <p className="text-base-content/70">
             {totalGuests} of {maxGuests} spots filled
           </p>

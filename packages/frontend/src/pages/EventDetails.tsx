@@ -152,7 +152,7 @@ export function EventDetails() {
     setIsLoading(false);
   }, [id, user?.id]);
 
-  async function handleSignup() {
+  async function handleSignup(asResponsible?: boolean) {
     if (!user || !id) {
       navigate("/login");
       return;
@@ -161,7 +161,9 @@ export function EventDetails() {
     setIsSigningUp(true);
     setError("");
 
-    const { error } = await eden.events[id].signup.post();
+    const { error } = await eden.events[id].signup.post(
+      asResponsible !== undefined ? { asResponsible } : undefined
+    );
 
     if (error) {
       setError(getErrorMessage(error));
@@ -271,6 +273,11 @@ export function EventDetails() {
   );
   const canManageTickets = user?.role === "admin" || user?.role === "superadmin" || isResponsible;
 
+  // Check if user can sign up as responsible
+  const hasResponsibleEducation = user?.educations?.includes("responsible");
+  const responsibleSpotsAvailable = event.workers.responsible.length < event.maxResponsible;
+  const canSignupAsResponsible = hasResponsibleEducation && responsibleSpotsAvailable;
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Back link */}
@@ -349,10 +356,42 @@ export function EventDetails() {
                     </>
                   )}
                 </button>
+              ) : canSignupAsResponsible ? (
+                // Show two buttons for users with responsible education
+                <>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleSignup(true)}
+                    disabled={!canSignup || isSigningUp}
+                  >
+                    {isSigningUp ? (
+                      <span className="loading loading-spinner"></span>
+                    ) : (
+                      <>
+                        <UserPlus className="w-5 h-5" />
+                        Sign Up as Responsible
+                      </>
+                    )}
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => handleSignup(false)}
+                    disabled={!canSignup || isSigningUp}
+                  >
+                    {isSigningUp ? (
+                      <span className="loading loading-spinner"></span>
+                    ) : (
+                      <>
+                        <UserPlus className="w-5 h-5" />
+                        Sign Up as Worker
+                      </>
+                    )}
+                  </button>
+                </>
               ) : (
                 <button
                   className="btn btn-primary"
-                  onClick={handleSignup}
+                  onClick={() => handleSignup()}
                   disabled={!canSignup || isSigningUp}
                 >
                   {isSigningUp ? (
@@ -371,7 +410,7 @@ export function EventDetails() {
                   to={`/events/${event.id}/guests`}
                   className="btn btn-secondary"
                 >
-                  Manage Guests
+                  {canManageTickets ? "View All Guests" : "Manage Guests"}
                 </Link>
               )}
             </div>
@@ -418,7 +457,7 @@ export function EventDetails() {
                       {event.workers.responsible.map((worker) => (
                         <tr key={worker.id}>
                           <td>
-                            <div className="avatar">
+                            <Link to={`/users/${worker.user.id}`} className="avatar hover:opacity-80 transition-opacity">
                               <div className="w-10 h-10 rounded-full">
                                 <img
                                   src={getWorkerAvatarUrl(worker)}
@@ -433,10 +472,13 @@ export function EventDetails() {
                                   }}
                                 />
                               </div>
-                            </div>
+                            </Link>
                           </td>
                           <td>
-                            <div className="flex flex-col">
+                            <Link
+                              to={`/users/${worker.user.id}`}
+                              className="flex flex-col hover:text-primary transition-colors"
+                            >
                               <span className="font-medium">
                                 {getWorkerDisplayName(worker)}
                               </span>
@@ -445,7 +487,7 @@ export function EventDetails() {
                                   {worker.user.name}
                                 </span>
                               )}
-                            </div>
+                            </Link>
                           </td>
                           <td className="text-sm text-base-content/70">
                             {formatSignupDate(worker.createdAt)}
@@ -485,7 +527,7 @@ export function EventDetails() {
                       {event.workers.regular.map((worker) => (
                         <tr key={worker.id}>
                           <td>
-                            <div className="avatar">
+                            <Link to={`/users/${worker.user.id}`} className="avatar hover:opacity-80 transition-opacity">
                               <div className="w-10 h-10 rounded-full">
                                 <img
                                   src={getWorkerAvatarUrl(worker)}
@@ -500,10 +542,13 @@ export function EventDetails() {
                                   }}
                                 />
                               </div>
-                            </div>
+                            </Link>
                           </td>
                           <td>
-                            <div className="flex flex-col">
+                            <Link
+                              to={`/users/${worker.user.id}`}
+                              className="flex flex-col hover:text-primary transition-colors"
+                            >
                               <span className="font-medium">
                                 {getWorkerDisplayName(worker)}
                               </span>
@@ -512,7 +557,7 @@ export function EventDetails() {
                                   {worker.user.name}
                                 </span>
                               )}
-                            </div>
+                            </Link>
                           </td>
                           <td className="text-sm text-base-content/70">
                             {formatSignupDate(worker.createdAt)}

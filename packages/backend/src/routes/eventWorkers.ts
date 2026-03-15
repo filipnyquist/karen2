@@ -7,9 +7,10 @@ import { ws } from "../ws";
 export const eventWorkerRoutes = new Elysia({ prefix: "/events/:eventId" })
   .use(authMiddleware)
   // Sign up as worker for event
-  .post("/signup", async ({ params, user, set }) => {
+  .post("/signup", async ({ params, user, body, set }) => {
     const eventId = params.eventId;
     const userId = user!.id;
+    const asResponsible = body?.asResponsible;
 
     // Get event details
     const event = await db.query.events.findFirst({
@@ -68,9 +69,29 @@ export const eventWorkerRoutes = new Elysia({ prefix: "/events/:eventId" })
       return { error: "This event is full" };
     }
 
-    const isResponsible = canBeResponsible && responsibleCount < event.minResponsible
-      ? true
-      : false;
+    // Determine if user should be responsible
+    let isResponsible: boolean;
+
+    if (asResponsible === true) {
+      // User explicitly wants to be responsible
+      if (!canBeResponsible) {
+        if (!userEducation) {
+          set.status = 403;
+          return { error: "You need responsible education to sign up as responsible" };
+        }
+        if (responsibleCount >= event.maxResponsible) {
+          set.status = 400;
+          return { error: "No responsible spots available" };
+        }
+      }
+      isResponsible = true;
+    } else if (asResponsible === false) {
+      // User explicitly wants to be regular worker
+      isResponsible = false;
+    } else {
+      // Auto-assign based on event needs (backwards compatible)
+      isResponsible = canBeResponsible && responsibleCount < event.minResponsible;
+    }
 
     // Sign up user
     const [signup] = await db
@@ -123,6 +144,9 @@ export const eventWorkerRoutes = new Elysia({ prefix: "/events/:eventId" })
     params: t.Object({
       eventId: t.String(),
     }),
+    body: t.Optional(t.Object({
+      asResponsible: t.Optional(t.Boolean()),
+    })),
     beforeHandle: [requireAuth],
   })
   // Remove worker signup (self, responsible, or admin)

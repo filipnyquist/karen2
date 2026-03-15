@@ -9,6 +9,7 @@ export interface User {
   name: string;
   role: UserRole;
   emailVerified: boolean;
+  educations?: string[];
 }
 
 interface AuthContextType {
@@ -48,7 +49,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { data, error } = await eden.auth.me.get();
       if (data?.user) {
-        setUser(data.user as User);
+        // Also fetch educations from /users/me
+        const { data: userData } = await eden.users.me.get();
+        const educations = userData?.user?.educations as string[] || [];
+        setUser({ ...data.user, educations } as User);
       } else {
         localStorage.removeItem("token");
       }
