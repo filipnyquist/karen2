@@ -42,9 +42,13 @@
     "edit": "Redigera plats",
     "form": {
       "name": "Namn",
+      "nameDesc": "Namnet på platsen eller lokalen",
       "address": "Adress",
+      "addressDesc": "Gatuadress eller platsinformation",
       "description": "Beskrivning",
-      "capacity": "Kapacitet"
+      "descriptionDesc": "Ytterligare detaljer om platsen (vägbeskrivning, parkering, etc.)",
+      "capacity": "Kapacitet",
+      "capacityDesc": "Maximalt antal personer som lokalen rymmer"
     }
   },
   "frontpage": {

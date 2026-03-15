@@ -42,9 +42,13 @@
     "edit": "Edit location",
     "form": {
       "name": "Name",
+      "nameDesc": "The name of the location or venue",
       "address": "Address",
+      "addressDesc": "Street address or location details",
       "description": "Description",
-      "capacity": "Capacity"
+      "descriptionDesc": "Additional details about the location (directions, parking, etc.)",
+      "capacity": "Capacity",
+      "capacityDesc": "Maximum number of people the venue can hold"
     }
   },
   "frontpage": {

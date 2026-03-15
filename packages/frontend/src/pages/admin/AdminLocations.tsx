@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { eden } from "../../eden";
 import {
   MapPin,
@@ -24,6 +25,7 @@ interface Location {
 }
 
 export function AdminLocations() {
+  const { t } = useTranslation("admin");
   const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -254,7 +256,7 @@ export function AdminLocations() {
             <form onSubmit={handleSubmit} className="mt-4 space-y-4">
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Name *</span>
+                  <span className="label-text">{t("admin:locations.form.name")} *</span>
                 </label>
                 <input
                   type="text"
@@ -263,11 +265,14 @@ export function AdminLocations() {
                   onChange={(e) => setName(e.target.value)}
                   required
                 />
+                <label className="label">
+                  <span className="label-text-alt">{t("admin:locations.form.nameDesc")}</span>
+                </label>
               </div>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Description</span>
+                  <span className="label-text">{t("admin:locations.form.description")}</span>
                 </label>
                 <textarea
                   className="textarea textarea-bordered"
@@ -275,11 +280,14 @@ export function AdminLocations() {
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
                 />
+                <label className="label">
+                  <span className="label-text-alt">{t("admin:locations.form.descriptionDesc")}</span>
+                </label>
               </div>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Address</span>
+                  <span className="label-text">{t("admin:locations.form.address")}</span>
                 </label>
                 <input
                   type="text"
@@ -287,11 +295,14 @@ export function AdminLocations() {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                 />
+                <label className="label">
+                  <span className="label-text-alt">{t("admin:locations.form.addressDesc")}</span>
+                </label>
               </div>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Capacity</span>
+                  <span className="label-text">{t("admin:locations.form.capacity")}</span>
                 </label>
                 <input
                   type="number"
@@ -300,6 +311,9 @@ export function AdminLocations() {
                   onChange={(e) => setCapacity(e.target.value)}
                   min={0}
                 />
+                <label className="label">
+                  <span className="label-text-alt">{t("admin:locations.form.capacityDesc")}</span>
+                </label>
               </div>
 
               <div className="modal-action">

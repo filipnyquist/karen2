@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { eden } from "../../eden";
+import { DateTimePicker } from "../../components/DateTimePicker";
 import {
   Calendar,
   ChevronLeft,
@@ -38,6 +40,7 @@ interface Event {
 export function EditEvent() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation(["events", "admin"]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState("");
@@ -49,8 +52,8 @@ export function EditEvent() {
   const [type, setType] = useState<"event" | "private_event">("event");
   const [notice, setNotice] = useState("");
   const [locationId, setLocationId] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [endTime, setEndTime] = useState<Date | null>(null);
   const [status, setStatus] = useState<"open" | "booked" | "canceled">("open");
   const [minResponsible, setMinResponsible] = useState(1);
   const [maxResponsible, setMaxResponsible] = useState(2);
@@ -91,9 +94,9 @@ export function EditEvent() {
     setType(event.type);
     setNotice(event.notice || "");
     setLocationId(event.location.id);
-    // Convert ISO strings to datetime-local format (YYYY-MM-DDTHH:mm)
-    setStartTime(formatDateTimeLocal(event.startTime));
-    setEndTime(formatDateTimeLocal(event.endTime));
+    // Convert ISO strings to Date objects
+    setStartTime(new Date(event.startTime));
+    setEndTime(new Date(event.endTime));
     setStatus(event.status);
     setMinResponsible(event.minResponsible);
     setMaxResponsible(event.maxResponsible);
@@ -104,16 +107,6 @@ export function EditEvent() {
     setGivesPoints(event.givesPoints);
 
     setIsFetching(false);
-  }
-
-  function formatDateTimeLocal(isoString: string): string {
-    const date = new Date(isoString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -128,8 +121,8 @@ export function EditEvent() {
     if (type) payload.type = type;
     if (notice !== undefined) payload.notice = notice || undefined;
     if (locationId) payload.locationId = locationId;
-    if (startTime) payload.startTime = new Date(startTime).toISOString();
-    if (endTime) payload.endTime = new Date(endTime).toISOString();
+    if (startTime) payload.startTime = startTime.toISOString();
+    if (endTime) payload.endTime = endTime.toISOString();
     if (status) payload.status = status;
     if (minResponsible !== undefined) payload.minResponsible = minResponsible;
     if (maxResponsible !== undefined) payload.maxResponsible = maxResponsible;
@@ -197,21 +190,24 @@ export function EditEvent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="form-control md:col-span-2">
                   <label className="label">
-                    <span className="label-text">Title</span>
+                    <span className="label-text">{t("events:form.title")}</span>
                   </label>
                   <input
                     type="text"
                     className="input input-bordered"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Event title"
+                    placeholder={t("events:form.title")}
                     maxLength={255}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.titleDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Type</span>
+                    <span className="label-text">{t("events:form.type")}</span>
                   </label>
                   <select
                     className="select select-bordered"
@@ -221,11 +217,14 @@ export function EditEvent() {
                     <option value="event">Public Event</option>
                     <option value="private_event">Private Event</option>
                   </select>
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.typeDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Status</span>
+                    <span className="label-text">{t("events:form.status")}</span>
                   </label>
                   <select
                     className="select select-bordered"
@@ -236,50 +235,62 @@ export function EditEvent() {
                     <option value="booked">Booked</option>
                     <option value="canceled">Canceled</option>
                   </select>
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.statusDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control md:col-span-2">
                   <label className="label">
-                    <span className="label-text">Location</span>
+                    <span className="label-text">{t("events:form.location")}</span>
                   </label>
                   <select
                     className="select select-bordered"
                     value={locationId}
                     onChange={(e) => setLocationId(e.target.value)}
                   >
-                    <option value="">Select a location</option>
+                    <option value="">{t("events:form.location")}</option>
                     {locations.map((loc) => (
                       <option key={loc.id} value={loc.id}>
                         {loc.name}
                       </option>
                     ))}
                   </select>
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.locationDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control md:col-span-2">
                   <label className="label">
-                    <span className="label-text">Description</span>
+                    <span className="label-text">{t("events:form.description")}</span>
                   </label>
                   <textarea
                     className="textarea textarea-bordered"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Event description"
+                    placeholder={t("events:form.description")}
                     rows={3}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.descriptionDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control md:col-span-2">
                   <label className="label">
-                    <span className="label-text">Notice</span>
+                    <span className="label-text">{t("events:form.notice")}</span>
                   </label>
                   <input
                     type="text"
                     className="input input-bordered"
                     value={notice}
                     onChange={(e) => setNotice(e.target.value)}
-                    placeholder="Important notice for attendees"
+                    placeholder={t("events:form.notice")}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.noticeDesc")}</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -294,26 +305,30 @@ export function EditEvent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Start Time</span>
+                    <span className="label-text">{t("events:form.startTime")}</span>
                   </label>
-                  <input
-                    type="datetime-local"
-                    className="input input-bordered"
+                  <DateTimePicker
                     value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
+                    onChange={setStartTime}
+                    placeholder={t("events:form.startTime")}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.startTimeDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">End Time</span>
+                    <span className="label-text">{t("events:form.endTime")}</span>
                   </label>
-                  <input
-                    type="datetime-local"
-                    className="input input-bordered"
+                  <DateTimePicker
                     value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
+                    onChange={setEndTime}
+                    placeholder={t("events:form.endTime")}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.endTimeDesc")}</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -328,7 +343,7 @@ export function EditEvent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Min Responsible</span>
+                    <span className="label-text">{t("events:form.minResponsible")}</span>
                   </label>
                   <input
                     type="number"
@@ -337,11 +352,14 @@ export function EditEvent() {
                     onChange={(e) => setMinResponsible(parseInt(e.target.value) || 0)}
                     min={0}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.minResponsibleDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Max Responsible</span>
+                    <span className="label-text">{t("events:form.maxResponsible")}</span>
                   </label>
                   <input
                     type="number"
@@ -350,11 +368,14 @@ export function EditEvent() {
                     onChange={(e) => setMaxResponsible(parseInt(e.target.value) || 0)}
                     min={0}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.maxResponsibleDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Min Workers</span>
+                    <span className="label-text">{t("events:form.minWorkers")}</span>
                   </label>
                   <input
                     type="number"
@@ -363,11 +384,14 @@ export function EditEvent() {
                     onChange={(e) => setMinWorkers(parseInt(e.target.value) || 0)}
                     min={0}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.minWorkersDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Max Workers</span>
+                    <span className="label-text">{t("events:form.maxWorkers")}</span>
                   </label>
                   <input
                     type="number"
@@ -376,6 +400,9 @@ export function EditEvent() {
                     onChange={(e) => setMaxWorkers(parseInt(e.target.value) || 0)}
                     min={0}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.maxWorkersDesc")}</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -390,7 +417,7 @@ export function EditEvent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Max Guests</span>
+                    <span className="label-text">{t("events:form.maxGuests")}</span>
                   </label>
                   <input
                     type="number"
@@ -400,13 +427,13 @@ export function EditEvent() {
                     min={0}
                   />
                   <label className="label">
-                    <span className="label-text-alt">Maximum total guests allowed</span>
+                    <span className="label-text-alt">{t("events:form.maxGuestsDesc")}</span>
                   </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Max Guests Per Person</span>
+                    <span className="label-text">{t("events:form.maxGuestsPerPerson")}</span>
                   </label>
                   <input
                     type="number"
@@ -419,7 +446,7 @@ export function EditEvent() {
                     placeholder="Unlimited"
                   />
                   <label className="label">
-                    <span className="label-text-alt">Max guests each worker can bring</span>
+                    <span className="label-text-alt">{t("events:form.maxGuestsPerPersonDesc")}</span>
                   </label>
                 </div>
               </div>
@@ -440,7 +467,7 @@ export function EditEvent() {
                     checked={givesPoints}
                     onChange={(e) => setGivesPoints(e.target.checked)}
                   />
-                  <span className="label-text">This event gives points to workers</span>
+                  <span className="label-text">{t("events:form.givesPointsDesc")}</span>
                 </label>
               </div>
             </div>

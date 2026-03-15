@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { eden } from "../../eden";
+import { DateTimePicker } from "../../components/DateTimePicker";
 import {
   Calendar,
   ChevronLeft,
@@ -19,6 +21,7 @@ interface Location {
 
 export function CreateEvent() {
   const navigate = useNavigate();
+  const { t } = useTranslation(["events", "admin"]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [locations, setLocations] = useState<Location[]>([]);
@@ -29,8 +32,8 @@ export function CreateEvent() {
   const [type, setType] = useState<"event" | "private_event">("event");
   const [notice, setNotice] = useState("");
   const [locationId, setLocationId] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [endTime, setEndTime] = useState<Date | null>(null);
   const [minResponsible, setMinResponsible] = useState(1);
   const [maxResponsible, setMaxResponsible] = useState(2);
   const [minWorkers, setMinWorkers] = useState(2);
@@ -55,14 +58,20 @@ export function CreateEvent() {
     setError("");
     setIsLoading(true);
 
+    if (!startTime || !endTime) {
+      setError("Please select both start and end time");
+      setIsLoading(false);
+      return;
+    }
+
     const payload = {
       title,
       description: description || undefined,
       type,
       notice: notice || undefined,
       locationId,
-      startTime: new Date(startTime).toISOString(),
-      endTime: new Date(endTime).toISOString(),
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
       minResponsible,
       maxResponsible,
       minWorkers,
@@ -120,22 +129,25 @@ export function CreateEvent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="form-control md:col-span-2">
                   <label className="label">
-                    <span className="label-text">Title *</span>
+                    <span className="label-text">{t("events:form.title")} *</span>
                   </label>
                   <input
                     type="text"
                     className="input input-bordered"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Event title"
+                    placeholder={t("events:form.title")}
                     required
                     maxLength={255}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.titleDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Type *</span>
+                    <span className="label-text">{t("events:form.type")} *</span>
                   </label>
                   <select
                     className="select select-bordered"
@@ -146,11 +158,14 @@ export function CreateEvent() {
                     <option value="event">Public Event</option>
                     <option value="private_event">Private Event</option>
                   </select>
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.typeDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Location *</span>
+                    <span className="label-text">{t("events:form.location")} *</span>
                   </label>
                   <select
                     className="select select-bordered"
@@ -158,39 +173,48 @@ export function CreateEvent() {
                     onChange={(e) => setLocationId(e.target.value)}
                     required
                   >
-                    <option value="">Select a location</option>
+                    <option value="">{t("events:form.location")}</option>
                     {locations.map((loc) => (
                       <option key={loc.id} value={loc.id}>
                         {loc.name}
                       </option>
                     ))}
                   </select>
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.locationDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control md:col-span-2">
                   <label className="label">
-                    <span className="label-text">Description</span>
+                    <span className="label-text">{t("events:form.description")}</span>
                   </label>
                   <textarea
                     className="textarea textarea-bordered"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Event description"
+                    placeholder={t("events:form.description")}
                     rows={3}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.descriptionDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control md:col-span-2">
                   <label className="label">
-                    <span className="label-text">Notice</span>
+                    <span className="label-text">{t("events:form.notice")}</span>
                   </label>
                   <input
                     type="text"
                     className="input input-bordered"
                     value={notice}
                     onChange={(e) => setNotice(e.target.value)}
-                    placeholder="Important notice for attendees"
+                    placeholder={t("events:form.notice")}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.noticeDesc")}</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -205,28 +229,32 @@ export function CreateEvent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Start Time *</span>
+                    <span className="label-text">{t("events:form.startTime")} *</span>
                   </label>
-                  <input
-                    type="datetime-local"
-                    className="input input-bordered"
+                  <DateTimePicker
                     value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
+                    onChange={setStartTime}
+                    placeholder={t("events:form.startTime")}
                     required
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.startTimeDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">End Time *</span>
+                    <span className="label-text">{t("events:form.endTime")} *</span>
                   </label>
-                  <input
-                    type="datetime-local"
-                    className="input input-bordered"
+                  <DateTimePicker
                     value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
+                    onChange={setEndTime}
+                    placeholder={t("events:form.endTime")}
                     required
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.endTimeDesc")}</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -241,7 +269,7 @@ export function CreateEvent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Min Responsible</span>
+                    <span className="label-text">{t("events:form.minResponsible")}</span>
                   </label>
                   <input
                     type="number"
@@ -250,11 +278,14 @@ export function CreateEvent() {
                     onChange={(e) => setMinResponsible(parseInt(e.target.value) || 0)}
                     min={0}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.minResponsibleDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Max Responsible</span>
+                    <span className="label-text">{t("events:form.maxResponsible")}</span>
                   </label>
                   <input
                     type="number"
@@ -263,11 +294,14 @@ export function CreateEvent() {
                     onChange={(e) => setMaxResponsible(parseInt(e.target.value) || 0)}
                     min={0}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.maxResponsibleDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Min Workers</span>
+                    <span className="label-text">{t("events:form.minWorkers")}</span>
                   </label>
                   <input
                     type="number"
@@ -276,11 +310,14 @@ export function CreateEvent() {
                     onChange={(e) => setMinWorkers(parseInt(e.target.value) || 0)}
                     min={0}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.minWorkersDesc")}</span>
+                  </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Max Workers</span>
+                    <span className="label-text">{t("events:form.maxWorkers")}</span>
                   </label>
                   <input
                     type="number"
@@ -289,6 +326,9 @@ export function CreateEvent() {
                     onChange={(e) => setMaxWorkers(parseInt(e.target.value) || 0)}
                     min={0}
                   />
+                  <label className="label">
+                    <span className="label-text-alt">{t("events:form.maxWorkersDesc")}</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -303,7 +343,7 @@ export function CreateEvent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Max Guests</span>
+                    <span className="label-text">{t("events:form.maxGuests")}</span>
                   </label>
                   <input
                     type="number"
@@ -313,13 +353,13 @@ export function CreateEvent() {
                     min={0}
                   />
                   <label className="label">
-                    <span className="label-text-alt">Maximum total guests allowed</span>
+                    <span className="label-text-alt">{t("events:form.maxGuestsDesc")}</span>
                   </label>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Max Guests Per Person</span>
+                    <span className="label-text">{t("events:form.maxGuestsPerPerson")}</span>
                   </label>
                   <input
                     type="number"
@@ -332,7 +372,7 @@ export function CreateEvent() {
                     placeholder="Unlimited"
                   />
                   <label className="label">
-                    <span className="label-text-alt">Max guests each worker can bring</span>
+                    <span className="label-text-alt">{t("events:form.maxGuestsPerPersonDesc")}</span>
                   </label>
                 </div>
               </div>
@@ -353,7 +393,7 @@ export function CreateEvent() {
                     checked={givesPoints}
                     onChange={(e) => setGivesPoints(e.target.checked)}
                   />
-                  <span className="label-text">This event gives points to workers</span>
+                  <span className="label-text">{t("events:form.givesPointsDesc")}</span>
                 </label>
               </div>
             </div>
