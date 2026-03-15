@@ -282,7 +282,7 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     return result;
   }, {
     params: t.Object({
-      id: t.String(),
+      eventId: t.String(),
     }),
   })
   // Create event (admin only)
@@ -426,7 +426,7 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     };
   }, {
     params: t.Object({
-      id: t.String(),
+      eventId: t.String(),
     }),
     body: t.Object({
       title: t.Optional(t.String({ minLength: 1, maxLength: 255 })),
@@ -467,7 +467,7 @@ export const eventRoutes = new Elysia({ prefix: "/events" })
     return { message: "Event deleted successfully" };
   }, {
     params: t.Object({
-      id: t.String(),
+      eventId: t.String(),
     }),
     beforeHandle: [requireAdmin],
   });
