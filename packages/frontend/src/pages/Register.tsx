@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 import { Mail, Lock, User, AlertCircle, Check } from "lucide-react";
 
 export function Register() {
+  const { t } = useTranslation("auth");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,12 +21,12 @@ export function Register() {
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("register.passwordMismatch"));
       return;
     }
 
     if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError(t("register.error"));
       return;
     }
 
@@ -34,7 +36,7 @@ export function Register() {
       await register(email, name, password);
       setIsSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(err instanceof Error ? err.message : t("register.error"));
     } finally {
       setIsLoading(false);
     }
@@ -48,13 +50,9 @@ export function Register() {
             <div className="w-16 h-16 rounded-full bg-success/20 flex items-center justify-center mb-4">
               <Check className="w-8 h-8 text-success" />
             </div>
-            <h2 className="card-title text-2xl">Registration Successful!</h2>
-            <p className="text-base-content/70 mb-4">
-              Please check your email to verify your account. Once verified, you
-              can sign in and start using Karen2.
-            </p>
+            <h2 className="card-title text-2xl">{t("register.success")}</h2>
             <Link to="/login" className="btn btn-primary">
-              Go to Login
+              {t("verifyEmail.loginButton")}
             </Link>
           </div>
         </div>
@@ -67,10 +65,10 @@ export function Register() {
       <div className="card w-full max-w-md bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="card-title text-2xl justify-center mb-2">
-            Create Account
+            {t("register.title")}
           </h2>
           <p className="text-center text-base-content/70 mb-6">
-            Join Karen2 and start working events
+            {t("register.subtitle")}
           </p>
 
           {error && (
@@ -83,13 +81,13 @@ export function Register() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Full Name</span>
+                <span className="label-text">{t("register.name")}</span>
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/50" />
                 <input
                   type="text"
-                  placeholder="John Doe"
+                  placeholder={t("register.namePlaceholder")}
                   className="input input-bordered w-full pl-10"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -100,13 +98,13 @@ export function Register() {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Email</span>
+                <span className="label-text">{t("register.email")}</span>
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/50" />
                 <input
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t("register.emailPlaceholder")}
                   className="input input-bordered w-full pl-10"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -117,13 +115,13 @@ export function Register() {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Password</span>
+                <span className="label-text">{t("register.password")}</span>
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/50" />
                 <input
                   type="password"
-                  placeholder="••••••••"
+                  placeholder={t("register.passwordPlaceholder")}
                   className="input input-bordered w-full pl-10"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -131,22 +129,17 @@ export function Register() {
                   minLength={8}
                 />
               </div>
-              <label className="label">
-                <span className="label-text-alt">
-                  Must be at least 8 characters
-                </span>
-              </label>
             </div>
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Confirm Password</span>
+                <span className="label-text">{t("register.confirmPassword")}</span>
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/50" />
                 <input
                   type="password"
-                  placeholder="••••••••"
+                  placeholder={t("register.confirmPasswordPlaceholder")}
                   className="input input-bordered w-full pl-10"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -163,17 +156,16 @@ export function Register() {
               {isLoading ? (
                 <span className="loading loading-spinner"></span>
               ) : (
-                "Create Account"
+                t("register.submit")
               )}
             </button>
           </form>
 
-          <div className="divider">or</div>
+          <div className="divider">{t("register.haveAccount")}</div>
 
           <p className="text-center">
-            Already have an account?{" "}
             <Link to="/login" className="link link-primary">
-              Sign in
+              {t("register.loginLink")}
             </Link>
           </p>
         </div>

@@ -1,0 +1,28 @@
+{
+  "hero": {
+    "title": "Välkommen till Karen2",
+    "subtitle": "Upptäck och delta i evenemang hos Blekinge Studentkår",
+    "ctaEvents": "Utforska evenemang",
+    "ctaRegister": "Bli medlem"
+  },
+  "features": {
+    "title": "Vad vi erbjuder",
+    "events": {
+      "title": "Evenemang",
+      "description": "Hitta och anmäl dig till spännande evenemang och aktiviteter"
+    },
+    "tickets": {
+      "title": "Digitala biljetter",
+      "description": "Få digitala biljetter direkt på din telefon"
+    },
+    "community": {
+      "title": "Gemenskap",
+      "description": "Träffa andra studenter och bygg nätverk"
+    }
+  },
+  "upcoming": {
+    "title": "Kommande evenemang",
+    "viewAll": "Visa alla evenemang",
+    "noEvents": "Inga kommande evenemang just nu"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "title": "Admin",
+  "dashboard": {
+    "title": "Admin Dashboard",
+    "stats": {
+      "users": "Användare",
+      "events": "Evenemang",
+      "locations": "Platser",
+      "registrations": "Anmälningar"
+    }
+  },
+  "users": {
+    "title": "Hantera användare",
+    "search": "Sök användare...",
+    "role": "Roll",
+    "verified": "Verifierad",
+    "actions": "Åtgärder",
+    "edit": "Redigera",
+    "delete": "Ta bort"
+  },
+  "events": {
+    "title": "Hantera evenemang",
+    "create": "Skapa evenemang",
+    "edit": "Redigera evenemang",
+    "search": "Sök evenemang...",
+    "status": "Status",
+    "registrations": "Anmälningar",
+    "actions": "Åtgärder",
+    "form": {
+      "title": "Titel",
+      "description": "Beskrivning",
+      "date": "Datum",
+      "time": "Tid",
+      "location": "Plats",
+      "capacity": "Kapacitet",
+      "image": "Bild"
+    }
+  },
+  "locations": {
+    "title": "Hantera platser",
+    "create": "Skapa plats",
+    "edit": "Redigera plats",
+    "form": {
+      "name": "Namn",
+      "address": "Adress",
+      "description": "Beskrivning",
+      "capacity": "Kapacitet"
+    }
+  },
+  "frontpage": {
+    "title": "Redigera startsida",
+    "hero": "Hero-sektion",
+    "featured": "Utvalda evenemang"
+  }
+}

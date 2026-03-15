@@ -1,0 +1,16 @@
+{
+  "title": "Poängtavla",
+  "subtitle": "Topplista över mest aktiva medlemmar",
+  "rank": "Rank",
+  "user": "Användare",
+  "events": "Evenemang",
+  "points": "Poäng",
+  "yourRank": "Din placering",
+  "noScores": "Inga poäng för denna period än",
+  "period": {
+    "allTime": "All tid",
+    "thisYear": "Detta år",
+    "thisMonth": "Denna månad",
+    "thisSemester": "Denna termin"
+  }
+}

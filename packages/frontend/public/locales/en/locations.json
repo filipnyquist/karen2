@@ -1,0 +1,13 @@
+{
+  "title": "Locations",
+  "subtitle": "Explore our event venues",
+  "search": "Search locations...",
+  "noLocations": "No locations found",
+  "details": {
+    "back": "Back to locations",
+    "address": "Address",
+    "directions": "Directions",
+    "upcomingEvents": "Upcoming events here",
+    "capacity": "Capacity"
+  }
+}

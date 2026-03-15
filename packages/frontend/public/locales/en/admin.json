@@ -1,0 +1,55 @@
+{
+  "title": "Admin",
+  "dashboard": {
+    "title": "Admin Dashboard",
+    "stats": {
+      "users": "Users",
+      "events": "Events",
+      "locations": "Locations",
+      "registrations": "Registrations"
+    }
+  },
+  "users": {
+    "title": "Manage users",
+    "search": "Search users...",
+    "role": "Role",
+    "verified": "Verified",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "events": {
+    "title": "Manage events",
+    "create": "Create event",
+    "edit": "Edit event",
+    "search": "Search events...",
+    "status": "Status",
+    "registrations": "Registrations",
+    "actions": "Actions",
+    "form": {
+      "title": "Title",
+      "description": "Description",
+      "date": "Date",
+      "time": "Time",
+      "location": "Location",
+      "capacity": "Capacity",
+      "image": "Image"
+    }
+  },
+  "locations": {
+    "title": "Manage locations",
+    "create": "Create location",
+    "edit": "Edit location",
+    "form": {
+      "name": "Name",
+      "address": "Address",
+      "description": "Description",
+      "capacity": "Capacity"
+    }
+  },
+  "frontpage": {
+    "title": "Edit frontpage",
+    "hero": "Hero section",
+    "featured": "Featured events"
+  }
+}

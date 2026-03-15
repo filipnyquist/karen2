@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { eden } from "../eden";
 import {
   Calendar,
@@ -30,6 +31,7 @@ interface Event {
 }
 
 export function Home() {
+  const { t } = useTranslation("home");
   const [notice, setNotice] = useState<Notice | null>(null);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -65,19 +67,18 @@ export function Home() {
         <div className="hero-content text-center">
           <div className="max-w-2xl">
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              Welcome to Karen2
+              {t("hero.title")}
             </h1>
             <p className="text-xl md:text-2xl mb-8 opacity-90">
-              Event management platform for Blekinge Studentkår.
-              Sign up for events, manage guest lists, and track your contributions.
+              {t("hero.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/events" className="btn btn-secondary btn-lg">
                 <Calendar className="w-5 h-5" />
-                Browse Events
+                {t("hero.ctaEvents")}
               </Link>
               <Link to="/register" className="btn btn-outline btn-lg border-white text-white hover:bg-white hover:text-primary">
-                Get Started
+                {t("hero.ctaRegister")}
               </Link>
             </div>
           </div>
@@ -105,7 +106,7 @@ export function Home() {
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">
-            What You Can Do
+            {t("features.title")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="card bg-base-100 shadow-xl">
@@ -113,9 +114,9 @@ export function Home() {
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <Calendar className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="card-title">Work Events</h3>
+                <h3 className="card-title">{t("features.events.title")}</h3>
                 <p className="text-base-content/70">
-                  Sign up to work at pub and club events. First-come, first-served!
+                  {t("features.events.description")}
                 </p>
               </div>
             </div>
@@ -125,9 +126,9 @@ export function Home() {
                 <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center mb-4">
                   <MapPin className="w-8 h-8 text-secondary" />
                 </div>
-                <h3 className="card-title">Manage Guest Lists</h3>
+                <h3 className="card-title">{t("features.tickets.title")}</h3>
                 <p className="text-base-content/70">
-                  Add guests to events and keep track of who&apos;s coming.
+                  {t("features.tickets.description")}
                 </p>
               </div>
             </div>
@@ -137,9 +138,9 @@ export function Home() {
                 <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-4">
                   <Trophy className="w-8 h-8 text-accent" />
                 </div>
-                <h3 className="card-title">Earn Points</h3>
+                <h3 className="card-title">{t("features.community.title")}</h3>
                 <p className="text-base-content/70">
-                  Climb the scoreboard by working events and earning recognition.
+                  {t("features.community.description")}
                 </p>
               </div>
             </div>
@@ -151,9 +152,9 @@ export function Home() {
       <section className="py-20 px-4 bg-base-100">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold">Upcoming Events</h2>
+            <h2 className="text-3xl font-bold">{t("upcoming.title")}</h2>
             <Link to="/events" className="btn btn-ghost btn-sm">
-              View All <ArrowRight className="w-4 h-4" />
+              {t("upcoming.viewAll")} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -163,8 +164,7 @@ export function Home() {
             </div>
           ) : upcomingEvents.length === 0 ? (
             <div className="text-center py-12 text-base-content/60">
-              <p>No upcoming events at the moment.</p>
-              <p className="text-sm mt-2">Check back soon for new events!</p>
+              <p>{t("upcoming.noEvents")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -1,0 +1,39 @@
+{
+  "title": "Events",
+  "subtitle": "Explore our upcoming events",
+  "search": "Search events...",
+  "filter": {
+    "all": "All events",
+    "upcoming": "Upcoming",
+    "past": "Past"
+  },
+  "sort": {
+    "dateAsc": "Date (earliest first)",
+    "dateDesc": "Date (latest first)",
+    "name": "Name"
+  },
+  "noEvents": "No events found",
+  "loadMore": "Load more",
+  "details": {
+    "back": "Back to events",
+    "date": "Date",
+    "time": "Time",
+    "location": "Location",
+    "organizer": "Organizer",
+    "description": "Description",
+    "register": "Register now",
+    "registered": "You are registered",
+    "capacity": "Capacity",
+    "spotsLeft": "spots left",
+    "soldOut": "Sold out",
+    "share": "Share event",
+    "guestList": "Guest list"
+  },
+  "register": {
+    "title": "Register for event",
+    "confirm": "Confirm registration",
+    "success": "Registration successful!",
+    "error": "Registration failed",
+    "alreadyRegistered": "You are already registered"
+  }
+}

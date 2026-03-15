@@ -1,0 +1,28 @@
+{
+  "hero": {
+    "title": "Welcome to Karen2",
+    "subtitle": "Discover and join events at Blekinge Student Union",
+    "ctaEvents": "Explore events",
+    "ctaRegister": "Become a member"
+  },
+  "features": {
+    "title": "What we offer",
+    "events": {
+      "title": "Events",
+      "description": "Find and register for exciting events and activities"
+    },
+    "tickets": {
+      "title": "Digital Tickets",
+      "description": "Get digital tickets directly on your phone"
+    },
+    "community": {
+      "title": "Community",
+      "description": "Meet other students and build your network"
+    }
+  },
+  "upcoming": {
+    "title": "Upcoming events",
+    "viewAll": "View all events",
+    "noEvents": "No upcoming events right now"
+  }
+}

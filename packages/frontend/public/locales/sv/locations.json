@@ -1,0 +1,13 @@
+{
+  "title": "Platser",
+  "subtitle": "Utforska våra evenemangsplatser",
+  "search": "Sök platser...",
+  "noLocations": "Inga platser hittades",
+  "details": {
+    "back": "Tillbaka till platser",
+    "address": "Adress",
+    "directions": "Vägbeskrivning",
+    "upcomingEvents": "Kommande evenemang här",
+    "capacity": "Kapacitet"
+  }
+}

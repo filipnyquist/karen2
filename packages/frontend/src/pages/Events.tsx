@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { eden } from "../eden";
 import { useAuth } from "../contexts/AuthContext";
 import {
@@ -33,6 +34,7 @@ interface Event {
 }
 
 export function Events() {
+  const { t } = useTranslation("events");
   const { user } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);

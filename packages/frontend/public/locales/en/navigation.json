@@ -1,0 +1,20 @@
+{
+  "brand": "Karen2",
+  "links": {
+    "home": "Home",
+    "events": "Events",
+    "locations": "Locations",
+    "scoreboard": "Scoreboard",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "myTickets": "My Tickets",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "admin": "Admin"
+  },
+  "mobile": {
+    "menu": "Menu",
+    "close": "Close menu"
+  }
+}

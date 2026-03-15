@@ -1,0 +1,41 @@
+{
+  "app": {
+    "name": "Karen2",
+    "tagline": "Event Management Platform för Blekinge Studentkår"
+  },
+  "footer": {
+    "copyright": "Karen2 - Skriven av Filip Nyquist"
+  },
+  "buttons": {
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "delete": "Ta bort",
+    "edit": "Redigera",
+    "create": "Skapa",
+    "submit": "Skicka",
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "close": "Stäng",
+    "confirm": "Bekräfta",
+    "loading": "Laddar...",
+    "retry": "Försök igen"
+  },
+  "language": {
+    "select": "Välj språk",
+    "sv": "Svenska",
+    "en": "Engelska"
+  },
+  "errors": {
+    "generic": "Ett fel uppstod",
+    "notFound": "Sidan hittades inte",
+    "unauthorized": "Du måste logga in för att se denna sida",
+    "forbidden": "Du har inte behörighet att se denna sida",
+    "networkError": "Nätverksfel - kontrollera din anslutning"
+  },
+  "status": {
+    "loading": "Laddar...",
+    "success": "Klart!",
+    "error": "Fel",
+    "pending": "Väntar"
+  }
+}

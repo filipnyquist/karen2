@@ -1,0 +1,23 @@
+{
+  "title": "Dashboard",
+  "welcome": "Welcome back, {{name}}",
+  "stats": {
+    "myEvents": "My events",
+    "upcoming": "Upcoming",
+    "tickets": "Tickets"
+  },
+  "sections": {
+    "myEvents": "My events",
+    "upcoming": "Upcoming events",
+    "recent": "Recent activity"
+  },
+  "empty": {
+    "noEvents": "You don't have any events yet",
+    "browse": "Browse events"
+  },
+  "actions": {
+    "viewTickets": "View tickets",
+    "viewEvent": "View event",
+    "cancelRegistration": "Cancel registration"
+  }
+}

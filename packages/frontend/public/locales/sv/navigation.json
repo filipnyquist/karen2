@@ -1,0 +1,20 @@
+{
+  "brand": "Karen2",
+  "links": {
+    "home": "Hem",
+    "events": "Evenemang",
+    "locations": "Platser",
+    "scoreboard": "Poängtavla",
+    "dashboard": "Dashboard",
+    "profile": "Profil",
+    "myTickets": "Mina Biljetter",
+    "login": "Logga in",
+    "register": "Registrera",
+    "logout": "Logga ut",
+    "admin": "Admin"
+  },
+  "mobile": {
+    "menu": "Meny",
+    "close": "Stäng menyn"
+  }
+}

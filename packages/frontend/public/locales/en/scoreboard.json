@@ -1,0 +1,16 @@
+{
+  "title": "Scoreboard",
+  "subtitle": "Leaderboard of most active members",
+  "rank": "Rank",
+  "user": "User",
+  "events": "Events",
+  "points": "Points",
+  "yourRank": "Your rank",
+  "noScores": "No scores yet for this period",
+  "period": {
+    "allTime": "All time",
+    "thisYear": "This year",
+    "thisMonth": "This month",
+    "thisSemester": "This semester"
+  }
+}

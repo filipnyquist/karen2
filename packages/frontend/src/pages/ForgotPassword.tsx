@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { eden } from "../eden";
 import { Mail, AlertCircle, Check, ArrowLeft } from "lucide-react";
 
@@ -12,6 +13,7 @@ function getErrorMessage(error: unknown): string {
 }
 
 export function ForgotPassword() {
+  const { t } = useTranslation("auth");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -46,14 +48,10 @@ export function ForgotPassword() {
             <div className="w-16 h-16 rounded-full bg-success/20 flex items-center justify-center mb-4">
               <Check className="w-8 h-8 text-success" />
             </div>
-            <h2 className="card-title text-2xl">Check Your Email</h2>
-            <p className="text-base-content/70 mb-4">
-              If an account exists with this email, we&apos;ve sent password reset
-              instructions.
-            </p>
+            <h2 className="card-title text-2xl">{t("forgotPassword.success")}</h2>
             <Link to="/login" className="btn btn-primary">
               <ArrowLeft className="w-4 h-4" />
-              Back to Login
+              {t("forgotPassword.backToLogin")}
             </Link>
           </div>
         </div>
@@ -69,11 +67,10 @@ export function ForgotPassword() {
             <Link to="/login" className="btn btn-ghost btn-circle btn-sm">
               <ArrowLeft className="w-4 h-4" />
             </Link>
-            <h2 className="card-title text-2xl">Reset Password</h2>
+            <h2 className="card-title text-2xl">{t("forgotPassword.title")}</h2>
           </div>
           <p className="text-base-content/70 mb-6">
-            Enter your email and we&apos;ll send you instructions to reset your
-            password.
+            {t("forgotPassword.subtitle")}
           </p>
 
           {error && (
@@ -86,13 +83,13 @@ export function ForgotPassword() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Email</span>
+                <span className="label-text">{t("forgotPassword.email")}</span>
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/50" />
                 <input
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t("forgotPassword.emailPlaceholder")}
                   className="input input-bordered w-full pl-10"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -109,7 +106,7 @@ export function ForgotPassword() {
               {isLoading ? (
                 <span className="loading loading-spinner"></span>
               ) : (
-                "Send Reset Link"
+                t("forgotPassword.submit")
               )}
             </button>
           </form>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { eden } from "../eden";
 import { Trophy, Medal, Crown, Award, Star, Calendar } from "lucide-react";
 
@@ -11,10 +12,10 @@ interface ScoreboardEntry {
 }
 
 const periodOptions = [
-  { value: "semester", label: "This Semester" },
-  { value: "year", label: "This Year" },
-  { value: "month", label: "This Month" },
-  { value: "all", label: "All Time" },
+  { value: "semester", labelKey: "period.thisSemester" },
+  { value: "year", labelKey: "period.thisYear" },
+  { value: "month", labelKey: "period.thisMonth" },
+  { value: "all", labelKey: "period.allTime" },
 ];
 
 const rankIcons: Record<number, React.ReactNode> = {
@@ -30,6 +31,7 @@ const rankClasses: Record<number, string> = {
 };
 
 export function Scoreboard() {
+  const { t } = useTranslation("scoreboard");
   const [scoreboard, setScoreboard] = useState<ScoreboardEntry[]>([]);
   const [period, setPeriod] = useState("semester");
   const [periodLabel, setPeriodLabel] = useState("This Semester");
@@ -46,7 +48,8 @@ export function Scoreboard() {
     });
     if (data) {
       setScoreboard(data.scoreboard || []);
-      setPeriodLabel(data.periodLabel || periodOptions.find((p) => p.value === period)?.label || "");
+      const currentOption = periodOptions.find((p) => p.value === period);
+      setPeriodLabel(data.periodLabel || t(currentOption?.labelKey as string) || "");
     }
     setIsLoading(false);
   }
@@ -55,8 +58,8 @@ export function Scoreboard() {
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-8">
         <Trophy className="w-12 h-12 mx-auto mb-4 text-accent" />
-        <h1 className="text-3xl font-bold">Scoreboard</h1>
-        <p className="text-base-content/70">{periodLabel}</p>
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
+        <p className="text-base-content/70">{t("subtitle")}</p>
       </div>
 
       {/* Period Filter */}
@@ -69,7 +72,7 @@ export function Scoreboard() {
             }`}
             onClick={() => setPeriod(option.value)}
           >
-            {option.label}
+            {t(option.labelKey)}
           </button>
         ))}
       </div>
@@ -84,10 +87,7 @@ export function Scoreboard() {
           ) : scoreboard.length === 0 ? (
             <div className="text-center py-12 text-base-content/60">
               <Medal className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>No scores yet for this period</p>
-              <p className="text-sm mt-2">
-                Be the first to work an event and appear here!
-              </p>
+              <p>{t("noScores")}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -198,13 +198,6 @@ export function Scoreboard() {
         </div>
       </div>
 
-      {/* Info */}
-      <div className="max-w-3xl mx-auto mt-8 text-center text-sm text-base-content/60">
-        <p>
-          Points are awarded for working events marked as "gives points". Only
-          completed events count towards your score.
-        </p>
-      </div>
     </div>
   );
 }

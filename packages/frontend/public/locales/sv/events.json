@@ -1,0 +1,39 @@
+{
+  "title": "Evenemang",
+  "subtitle": "Utforska våra kommande evenemang",
+  "search": "Sök evenemang...",
+  "filter": {
+    "all": "Alla evenemang",
+    "upcoming": "Kommande",
+    "past": "Tidigare"
+  },
+  "sort": {
+    "dateAsc": "Datum (tidigast först)",
+    "dateDesc": "Datum (senast först)",
+    "name": "Namn"
+  },
+  "noEvents": "Inga evenemang hittades",
+  "loadMore": "Ladda fler",
+  "details": {
+    "back": "Tillbaka till evenemang",
+    "date": "Datum",
+    "time": "Tid",
+    "location": "Plats",
+    "organizer": "Arrangör",
+    "description": "Beskrivning",
+    "register": "Anmäl dig nu",
+    "registered": "Du är anmäld",
+    "capacity": "Platser",
+    "spotsLeft": "platser kvar",
+    "soldOut": "Fullbokat",
+    "share": "Dela evenemang",
+    "guestList": "Gästlista"
+  },
+  "register": {
+    "title": "Anmäl dig till evenemang",
+    "confirm": "Bekräfta anmälan",
+    "success": "Anmälan lyckades!",
+    "error": "Anmälan misslyckades",
+    "alreadyRegistered": "Du är redan anmäld"
+  }
+}

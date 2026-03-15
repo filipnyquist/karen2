@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 import { Mail, Lock, AlertCircle } from "lucide-react";
 
 export function Login() {
+  const { t } = useTranslation("auth");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -31,10 +33,10 @@ export function Login() {
       <div className="card w-full max-w-md bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="card-title text-2xl justify-center mb-2">
-            Welcome Back
+            {t("login.title")}
           </h2>
           <p className="text-center text-base-content/70 mb-6">
-            Sign in to your Karen2 account
+            {t("login.subtitle")}
           </p>
 
           {error && (
@@ -47,13 +49,13 @@ export function Login() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Email</span>
+                <span className="label-text">{t("login.email")}</span>
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/50" />
                 <input
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t("login.emailPlaceholder")}
                   className="input input-bordered w-full pl-10"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -64,19 +66,19 @@ export function Login() {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Password</span>
+                <span className="label-text">{t("login.password")}</span>
                 <Link
                   to="/forgot-password"
                   className="label-text-alt link link-primary"
                 >
-                  Forgot password?
+                  {t("login.forgotPassword")}
                 </Link>
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/50" />
                 <input
                   type="password"
-                  placeholder="••••••••"
+                  placeholder={t("login.passwordPlaceholder")}
                   className="input input-bordered w-full pl-10"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -93,17 +95,16 @@ export function Login() {
               {isLoading ? (
                 <span className="loading loading-spinner"></span>
               ) : (
-                "Sign In"
+                t("login.submit")
               )}
             </button>
           </form>
 
-          <div className="divider">or</div>
+          <div className="divider">{t("login.noAccount")}</div>
 
           <p className="text-center">
-            Don't have an account?{" "}
             <Link to="/register" className="link link-primary">
-              Create one
+              {t("login.registerLink")}
             </Link>
           </p>
         </div>

@@ -1,0 +1,23 @@
+{
+  "title": "Dashboard",
+  "welcome": "Välkommen tillbaka, {{name}}",
+  "stats": {
+    "myEvents": "Mina evenemang",
+    "upcoming": "Kommande",
+    "tickets": "Biljetter"
+  },
+  "sections": {
+    "myEvents": "Mina evenemang",
+    "upcoming": "Kommande evenemang",
+    "recent": "Senaste aktivitet"
+  },
+  "empty": {
+    "noEvents": "Du har inga evenemang än",
+    "browse": "Bläddra bland evenemang"
+  },
+  "actions": {
+    "viewTickets": "Visa biljetter",
+    "viewEvent": "Visa evenemang",
+    "cancelRegistration": "Avbryt anmälan"
+  }
+}

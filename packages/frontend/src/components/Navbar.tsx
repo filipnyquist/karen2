@@ -1,37 +1,40 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Calendar, MapPin, Trophy, Menu, X, User, LogOut, Ticket } from "lucide-react";
 import { useState } from "react";
 
 export function Navbar() {
   const { user, logout } = useAuth();
+  const { t } = useTranslation("navigation");
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
 
   const publicLinks = [
-    { to: "/", label: "Home", icon: null },
-    { to: "/events", label: "Events", icon: Calendar },
-    { to: "/locations", label: "Locations", icon: MapPin },
-    { to: "/scoreboard", label: "Scoreboard", icon: Trophy },
+    { to: "/", label: t("links.home"), icon: null },
+    { to: "/events", label: t("links.events"), icon: Calendar },
+    { to: "/locations", label: t("links.locations"), icon: MapPin },
+    { to: "/scoreboard", label: t("links.scoreboard"), icon: Trophy },
   ];
 
   const authLinks = user
     ? [
-        { to: "/dashboard", label: "Dashboard", icon: Calendar },
-        { to: "/profile", label: "Profile", icon: User },
+        { to: "/dashboard", label: t("links.dashboard"), icon: Calendar },
+        { to: "/profile", label: t("links.profile"), icon: User },
       ]
     : [
-        { to: "/login", label: "Login", icon: null },
-        { to: "/register", label: "Register", icon: null },
+        { to: "/login", label: t("links.login"), icon: null },
+        { to: "/register", label: t("links.register"), icon: null },
       ];
 
   return (
     <nav className="navbar bg-base-100 shadow-lg sticky top-0 z-50">
       <div className="navbar-start">
         <Link to="/" className="btn btn-ghost text-xl font-bold">
-          Karen2
+          {t("brand")}
         </Link>
       </div>
 
@@ -53,6 +56,7 @@ export function Navbar() {
       </div>
 
       <div className="navbar-end hidden lg:flex gap-2">
+        <LanguageSwitcher />
         {user ? (
           <>
             <div className="dropdown dropdown-end">
@@ -71,24 +75,24 @@ export function Navbar() {
               >
                 <li className="menu-title">{user.name}</li>
                 <li>
-                  <Link to="/dashboard">Dashboard</Link>
+                  <Link to="/dashboard">{t("links.dashboard")}</Link>
                 </li>
                 <li>
-                  <Link to="/profile">Profile</Link>
+                  <Link to="/profile">{t("links.profile")}</Link>
                 </li>
                 <li>
                   <Link to="/my-tickets">
-                    <Ticket className="w-4 h-4" /> My Tickets
+                    <Ticket className="w-4 h-4" /> {t("links.myTickets")}
                   </Link>
                 </li>
                 {(user.role === "admin" || user.role === "superadmin") && (
                   <li>
-                    <Link to="/admin">Admin</Link>
+                    <Link to="/admin">{t("links.admin")}</Link>
                   </li>
                 )}
                 <li>
                   <button onClick={logout} className="text-error">
-                    <LogOut className="w-4 h-4" /> Logout
+                    <LogOut className="w-4 h-4" /> {t("links.logout")}
                   </button>
                 </li>
               </ul>
@@ -97,17 +101,18 @@ export function Navbar() {
         ) : (
           <>
             <Link to="/login" className="btn btn-ghost">
-              Login
+              {t("links.login")}
             </Link>
             <Link to="/register" className="btn btn-primary">
-              Register
+              {t("links.register")}
             </Link>
           </>
         )}
       </div>
 
       {/* Mobile Menu Button */}
-      <div className="navbar-end lg:hidden">
+      <div className="navbar-end lg:hidden gap-2">
+        <LanguageSwitcher />
         <button
           className="btn btn-ghost btn-circle"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -141,7 +146,7 @@ export function Navbar() {
                     className={isActive("/dashboard") ? "active" : ""}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <Calendar className="w-4 h-4" /> Dashboard
+                    <Calendar className="w-4 h-4" /> {t("links.dashboard")}
                   </Link>
                 </li>
                 <li>
@@ -150,7 +155,7 @@ export function Navbar() {
                     className={isActive("/profile") ? "active" : ""}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <User className="w-4 h-4" /> Profile
+                    <User className="w-4 h-4" /> {t("links.profile")}
                   </Link>
                 </li>
                 <li>
@@ -159,7 +164,7 @@ export function Navbar() {
                     className={isActive("/my-tickets") ? "active" : ""}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <Ticket className="w-4 h-4" /> My Tickets
+                    <Ticket className="w-4 h-4" /> {t("links.myTickets")}
                   </Link>
                 </li>
                 {(user.role === "admin" || user.role === "superadmin") && (
@@ -169,13 +174,13 @@ export function Navbar() {
                       className={isActive("/admin") ? "active" : ""}
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Admin
+                      {t("links.admin")}
                     </Link>
                   </li>
                 )}
                 <li>
                   <button onClick={logout} className="text-error">
-                    <LogOut className="w-4 h-4" /> Logout
+                    <LogOut className="w-4 h-4" /> {t("links.logout")}
                   </button>
                 </li>
               </>
@@ -187,7 +192,7 @@ export function Navbar() {
                     className={isActive("/login") ? "active" : ""}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Login
+                    {t("links.login")}
                   </Link>
                 </li>
                 <li>
@@ -196,7 +201,7 @@ export function Navbar() {
                     className="btn btn-primary"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Register
+                    {t("links.register")}
                   </Link>
                 </li>
               </>

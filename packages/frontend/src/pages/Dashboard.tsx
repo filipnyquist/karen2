@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { eden } from "../eden";
 import {
@@ -55,6 +56,7 @@ interface DashboardData {
 }
 
 export function Dashboard() {
+  const { t } = useTranslation("dashboard");
   const { user } = useAuth();
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -100,10 +102,7 @@ export function Dashboard() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Welcome, {user?.name}!</h1>
-          <p className="text-base-content/70">
-            Here&apos;s what&apos;s happening with your events
-          </p>
+          <h1 className="text-3xl font-bold mb-2">{t('welcome', { name: user?.name || '' })}</h1>
         </div>
         <div className="flex gap-2">
           <Link to="/events" className="btn btn-primary">
